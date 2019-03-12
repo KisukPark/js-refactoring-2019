@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/KisukPark/js-refactoring-2019/issues"
   },
-  "homepage": "https://github.com/KisukPark/js-refactoring-2019#readme"
+  "homepage": "https://github.com/KisukPark/js-refactoring-2019#readme",
+  "devDependencies": {
+    "mocha": "^6.0.2"
+  }
 }
