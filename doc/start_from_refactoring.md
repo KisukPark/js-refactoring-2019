@@ -124,7 +124,10 @@ function amountFor(play, perf) {
 It’s my coding standard to always call the return value from a function “result”. That way I always know its role.
 ```
 
+---
 # Compile-Test-Commit
+
+---
 
 ```js
 function amountFor(play, perf) {
@@ -152,30 +155,34 @@ function amountFor(play, perf) {
 ```
 ---
 ```
-  I move onto the first argument.
+
+I move onto the first argument.
 Rename Parameter
 - Old name : perf
 - New name : aPerformance
+
 Again, this is following my coding style. With a dynamically typed language such as JavaScript, it’s useful to keep track of types—hence, my default name for a parameter includes the type name. I use an indefinite article with it unless there is some specific role information to capture in the name. I learned this convention from Kent Beck [Beck SBPP]and continue to find it helpful.
+
 Is this renaming worth the effort? Absolutely. Good code should clearly communicate what it is doing, and variable names are a key to clear code.
 ```
+---
 
 # Compile-Test-Commit
 
-  Removing play variable
+---
+
+```
+# Removing play variable
+
 As I consider the parameters to amountFor, I look to see where they come from. aPerformance comes from the loop variable, so naturally changes with each iteration through the loop.
 But play is computed from the performance, so there’s no need to pass it in as a parameter at all—I can just recalculate it within amountFor. When I’m breaking down a long function, I like to get rid of variables like play,
 variables create a lot of locally scoped names that complicate extractions. The refactoring I will use here is
 with Query (178).
 I begin by extracting the right-hand side of the assignment into a function.
-    because temporary
-  Replace Temp
-    
-  Extract Method
-- playFor(perf)
-Destination Scope 선택해보기 수동으로 해 보기
-어떤 차이가 있을까?
-어떤 방법을 쓰고 싶은가?
+```
+
+---
+```js
 function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
@@ -194,10 +201,24 @@ result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned $
  }
 plays[perf.playID];
 → playFor(perf);
+```
+---
+# Extract Method
+- playFor(perf)
 
-  Compile-Test-Commit
+1. Destination Scope 선택해보기
+1. 수동으로 해 보기
+1. 어떤 차이가 있을까?
+1. 어떤 방법을 쓰고 싶은가?
 
- function statement (invoice, plays) {
+---
+
+Compile-Test-Commit
+
+---
+
+```js
+function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
 let result = `Statement for ${invoice.customer}\n`;
@@ -214,10 +235,17 @@ totalAmount += thisAmount; }
 result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
 function playFor(perf) { return plays[perf.playID]
 }
-       Inline local variable
 }
+```
+---
+Inline local variable
 
-  Compile-Test-Commit
+---
+
+Compile-Test-Commit
+
+---
+
 
   Change Method signature - Remove parameter
 Add play manually
