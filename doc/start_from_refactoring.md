@@ -154,8 +154,8 @@ function amountFor(play, perf) {
 
 ```
 ---
-```
 
+```
 I move onto the first argument.
 Rename Parameter
 - Old name : perf
@@ -171,9 +171,11 @@ Is this renaming worth the effort? Absolutely. Good code should clearly communic
 
 ---
 
-```
+
 # Removing play variable
 
+
+```
 As I consider the parameters to amountFor, I look to see where they come from. aPerformance comes from the loop variable, so naturally changes with each iteration through the loop.
 But play is computed from the performance, so there’s no need to pass it in as a parameter at all—I can just recalculate it within amountFor. When I’m breaking down a long function, I like to get rid of variables like play,
 variables create a lot of locally scoped names that complicate extractions. The refactoring I will use here is
@@ -182,6 +184,7 @@ I begin by extracting the right-hand side of the assignment into a function.
 ```
 
 ---
+
 ```js
 function statement (invoice, plays) {
 let totalAmount = 0;
@@ -211,6 +214,10 @@ plays[perf.playID];
 1. 어떤 차이가 있을까?
 1. 어떤 방법을 쓰고 싶은가?
 
+Tip) 
+Function Statement 로 뺐을 시 원하는 함수 시그니처가 안나온다면, 임시변수로 한번 빼놓고 다시 extract method, inline variable 을 합니다.
+
+
 ---
 
 Compile-Test-Commit
@@ -238,18 +245,18 @@ function playFor(perf) { return plays[perf.playID]
 }
 ```
 ---
-Inline local variable
+
+### Inline local variable
 
 ---
 
-Compile-Test-Commit
+# Compile-Test-Commit
 
 ---
 
-
-  Change Method signature - Remove parameter
-Add play manually
- function amountFor(aPerformance, play) { let result = 0;
+```js
+ 
+function amountFor(aPerformance, play) { let result = 0;
 let play = playFor(aPerformance);
 switch (play.type) { case "tragedy":
 result = 40000;
@@ -264,10 +271,22 @@ result += 300 * aPerformance.audience;
 break; default:
 throw new Error(`unknown type: ${play.type}`); }
 return result; }
-  
-  Compile-Test-Commit
+```
 
- function statement (invoice, plays) {
+
+
+### Change Method signature 
+- Remove parameter
+### Add play manually
+
+---
+
+# Compile-Test-Commit
+
+---
+
+```js
+function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
 let result = `Statement for ${invoice.customer}\n`; const format = new Intl.NumberFormat("en-US",
@@ -281,12 +300,19 @@ if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience /
 result += ` ${playFor(perf).name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
 totalAmount += thisAmount; }
 result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
- 
-   This refactoring alarms some programmers. Previously, the code to look up the play was executed once in each loop iteration; now, it’s executed thrice. I’ll talk about the interplay of refactoring and performance later, but for the moment I’ll just observe that this change is unlikely to significantly affect performance, and even if it were, it is much easier to improve the performance of a well-factored code base.
+```
+
+---
+
+```
+This refactoring alarms some programmers. Previously, the code to look up the play was executed once in each loop iteration; now, it’s executed thrice. I’ll talk about the interplay of refactoring and performance later, but for the moment I’ll just observe that this change is unlikely to significantly affect performance, and even if it were, it is much easier to improve the performance of a well-factored code base.
 The great benefit of removing local variables is that it makes it much easier to do extractions, since there is less local scope to deal with. Indeed, usually I’ll take out local variables before I do any extractions.
 Now that I’m done with the arguments to amountFor, I look back at where it’s called. It’s being used to set a temporary variable that’s not updated again, so I apply Inline Variable(123).
-       
-  Inline local variable
+```
+---
+    
+### Inline local variable
+```js
 function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
@@ -301,10 +327,16 @@ if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience /
 result += ` ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
 totalAmount += amountFor(perf); }
 result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
-        
-  Compile-Test-Commit
+```
 
- function statement (invoice, plays) {
+---
+
+Compile-Test-Commit
+
+---
+
+```js
+function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
 let result = `Statement for ${invoice.customer}\n`; const format = new Intl.NumberFormat("en-US",
@@ -318,42 +350,76 @@ if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience /
 result += ` ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
 totalAmount += amountFor(perf); }
 result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
- Extract Method
+```
+
+---
+
+### Extract Method
 - Name: volumeCreditsFor(perf)
-Find your optimal refactoring sequence
+
+### Find your optimal refactoring sequence
 - How long?
 - How many manual refactoring?
 - How many typing?
 
- function volumeCreditsFor(perf) {
-let volumeCredits = 0;
-volumeCredits += Math.max(perf.audience - 30, 0);
-// add extra credit for every ten comedy attendees
-if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5); return volumeCredits;
-}
-Now I get the benefit from removing the play variable as it makes it easier to extract the volume credits calculation by removing one of the locally scoped variables.
-I still have to deal with the other two. Again, perf is easy to pass in, but volumeCredits is a bit more tricky as it is an accumulator updated in each pass of the loop. So my best bet is to initialize a shadow of it inside the extracted function and return it.
-I remove the unnecessary (and, in this case, downright misleading) comment.
- 
-  Compile-Test-Commit
+---
+### Extract Variable
+- Name: volumeCredits
 
-  Refactor volumeCreditsFor like this
+```js
 function volumeCreditsFor(perf) {
 let volumeCredits = 0;
 volumeCredits += Math.max(perf.audience - 30, 0);
 // add extra credit for every ten comedy attendees
 if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5); return volumeCredits;
 }
+```
+
+Now I get the benefit from removing the play variable as it makes it easier to extract the volume credits calculation by removing one of the locally scoped variables.
+
+I still have to deal with the other two. Again, perf is easy to pass in, but volumeCredits is a bit more tricky as it is an accumulator updated in each pass of the loop. So my best bet is to initialize a shadow of it inside the extracted function and return it.
+
+I remove the unnecessary (and, in this case, downright misleading) comment.
+
+---
+ 
+# Compile-Test-Commit
+
+---
+
+
+### Refactor volumeCreditsFor like this
+Rename Variable
+- volumeCredits → result
+
+~~~js
+function volumeCreditsFor(perf) {
+let volumeCredits = 0;
+volumeCredits += Math.max(perf.audience - 30, 0);
+// add extra credit for every ten comedy attendees
+if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5); return volumeCredits;
+}
+~~~
+
+~~~js
 function volumeCreditsFor(aPerformance) {
 let result = 0;
 result += Math.max(aPerformance.audience - 30, 0);
 // add extra credit for every ten comedy attendees
 if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5); return result;
 }
-  
-  Compile-Test-Commit
+~~~
 
-  Removing the format variable
+---
+  
+Compile-Test-Commit
+
+---
+
+### Removing the format variable
+As I suggested before, temporary variables can be a problem. They are only useful within their own routine, and therefore they encourage long, complex routines. My next move, then, is to replace some of them. The easiest one is format. This is a case of assigning a function to a temp, which I prefer to replace with a declared function.
+
+~~~js
 function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
@@ -366,42 +432,93 @@ for (let perf of invoice.performances) { volumeCredits += volumeCreditsFor(perf)
 result += ` ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
 totalAmount += amountFor(perf); }
 result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
+~~~
 
-  Removing the format variable
-As I suggested before, temporary variables can be a problem. They are only useful within their own routine, and therefore they encourage long, complex routines. My next move, then, is to replace some of them. The easiest one is format. This is a case of assigning a function to a temp, which I prefer to replace with a declared function.
- function format(aNumber) {
+### Manual Refactoring 
+
+~~~js
+function format(aNumber) {
 return new Intl.NumberFormat("en-US",
 { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(aNumber);
 }
+~~~
 
-  Compile-Test-Commit
+---
 
-   function statement (invoice, plays) {
-let totalAmount = 0;
-let volumeCredits = 0;
-let result = `Statement for ${invoice.customer}\n`;
-for (let perf of invoice.performances) { volumeCredits += volumeCreditsFor(perf);
-// print line for this order
-result += ` ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
-totalAmount += amountFor(perf); }
-result += `Amount owed is ${format(totalAmount/100)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
+Compile-Test-Commit
 
-  Compile-Test-Commit
+---
 
-  Change Function Declaration
+### What's left in function 'statement'
+~~~js
+function statement (invoice, plays) {
+   let totalAmount = 0;
+   let volumeCredits = 0;
+   let result = `Statement for ${invoice.customer}\n`;
+
+   for (let perf of invoice.performances) {
+       volumeCredits += volumeCreditsFor(perf);
+
+       // print line for this order
+       result += `  ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
+       totalAmount += amountFor(perf);
+   }
+   result += `Amount owed is ${format(totalAmount/100)}\n`;
+   result += `You earned ${volumeCredits} credits\n`;
+   return result;
+~~~
+
+---
+
+### Change Function Declaration
 Although changing a function variable to a declared function is a refactoring, I haven’t named it and included it in the catalog. There are many refactorings that I didn’t feel important enough for that. This one is both simple to do and relatively rare, so I didn’t think it was worthwhile.
+
 I’m not keen on the name—“format” doesn’t really convey enough of what it’s doing. “formatAsUSD” would be a bit too long-winded since it’s being used in a string template, particularly within this small scope. I think the fact that it’s formatting a currency amount is the thing to highlight here, so I pick a name that suggests that and apply Change Function Declaration (124).
-    
-   function usd(aNumber) {
+
+Naming is both important and tricky. Breaking a large function into smaller ones only adds value if the names are good. With good names, I don’t have to read the body of the function to see what it does. But it’s hard to get names right the first time, so I use the best name I can think of for the moment, and don’t hesitate to rename it later. Often, it takes a second pass through some code to realize what the best name really is.
+
+As I’m changing the name, I also move the duplicated division by 100 into the function. Storing money as integer cents is a common approach—it avoids the dangers of storing fractional monetary values as floats but allows me to use arithmetic operators. Whenever I want to display such a penny-integer number, however, I need a decimal, so my formatting function should take care of the division.
+
+---
+
+### Move Duplicated division
+
+~~~js
+function statement (invoice, plays) {
+   let totalAmount = 0;
+   let volumeCredits = 0;
+   let result = `Statement for ${invoice.customer}\n`;
+
+   for (let perf of invoice.performances) {
+       volumeCredits += volumeCreditsFor(perf);
+
+       // print line for this order
+       result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+       totalAmount += amountFor(perf);
+   }
+   result += `Amount owed is ${usd(totalAmount/100)}\n`;
+   result += `You earned ${volumeCredits/100} credits\n`;
+   return result;
+~~~
+
+~~~js
+function usd(aNumber) {
 return new Intl.NumberFormat("en-US",
 {
 style: "currency", currency: "USD", minimumFractionDigits: 2
 }).format(aNumber / 100); }
-Naming is both important and tricky. Breaking a large function into smaller ones only adds value if the names are good. With good names, I don’t have to read the body of the function to see what it does. But it’s hard to get names right the first time, so I use the best name I can think of for the moment, and don’t hesitate to rename it later. Often, it takes a second pass through some code to realize what the best name really is.
-As I’m changing the name, I also move the duplicated division by 100 into the function. Storing money as integer cents is a common approach—it avoids the dangers of storing fractional monetary values as floats but allows me to use arithmetic operators. Whenever I want to display such a penny-integer number, however, I need a decimal, so my formatting function should take care of the division.
+~~~
+
+---
+
+### Compile-Test-Commit
+
+---
    
-  Removing Total Volume Credits
-unction statement (invoice, plays) {
+### Removing Total Volume Credits
+
+~~~js
+function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
 let result = `Statement for ${invoice.customer}\n`;
@@ -410,10 +527,17 @@ for (let perf of invoice.performances) { volumeCredits += volumeCreditsFor(perf)
 result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
 totalAmount += amountFor(perf); }
 result += `Amount owed is ${usd(totalAmount)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
- 
-  Compile-Test-Commit
+~~~
 
-  Split Loop
+---
+
+### Compile-Test-Commit
+
+---
+
+### Split Loop
+
+~~~js
 function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
@@ -425,10 +549,17 @@ for (let perf of invoice.performances) {
 result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`; totalAmount += amountFor(perf);
 }
 result += `Amount owed is ${usd(totalAmount)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
-   
-  Compile-Test-Commit
+~~~
 
-  Slide Statement
+---
+   
+### Compile-Test-Commit
+
+---
+
+### Slide Statement
+
+~~~js 
 function statement (invoice, plays) {
 let totalAmount = 0;
 let volumeCredits = 0;
@@ -440,19 +571,34 @@ for (let perf of invoice.performances) {
 result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`; totalAmount += amountFor(perf);
 }
 result += `Amount owed is ${usd(totalAmount)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
-     
-  Compile-Test-Commit
+~~~ 
 
-  Extract Function
+---
+     
+### Compile-Test-Commit
+
+---
+
+### Extract Function
+
 Gathering together everything that updates the volumeCredits variable makes it easier to do Replace Temp with Query (178). As before, the first step is to apply Extract Function(106) to the overall calculation of the variable.
-     function totalVolumeCredits() { let volumeCredits = 0;
+
+~~~js
+function totalVolumeCredits() { let volumeCredits = 0;
 for (let perf of invoice.performances) { volumeCredits += volumeCreditsFor(perf);
 }
 return volumeCredits; }
+~~~
 
-  Compile-Test-Commit
+---
 
-  Inline volumeCredits
+### Compile-Test-Commit
+
+---
+
+### Inline volumeCredits
+
+~~~js
 function statement (invoice, plays) {
 let totalAmount = 0;
 let result = `Statement for ${invoice.customer}\n`;
@@ -462,41 +608,59 @@ for (let perf of invoice.performances) {
 result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`; totalAmount += amountFor(perf);
 }
 result += `Amount owed is ${usd(totalAmount)}\n`; result += `You earned ${volumeCredits} credits\n`; return result;
- 
-  Let me pause for a bit to talk about what I’ve just done here. Firstly, I know readers will again be , as many people are wary of repeating a loop. But
-. If you timed the code before and after this refactoring, you would probably —and that’s usually the case. Most programmers, even experienced ones, are poor
-judges of how code actually performs. Many of our intuitions are broken by clever compilers, modern caching techniques, and the like.
-But “mostly” isn’t the same as “alwaysly.” Sometimes a refactoring will have a significant performance implication. Even then, I usually go ahead and do it, because it’s much easier to tune the performance of well-factored code. If I introduce a significant performance issue during refactoring, I spend time on performance tuning afterwards. It may be that this leads to reversing some of the refactoring I did earlier—but most of the time, due to the refactoring, I can apply a more effective performance-tuning enhancement instead. I end up with code that’s both clearer and faster.
-So,
-worrying about
-   performance with this change
-most of the time, rerunning a loop like
-  this has a negligible effect on performance
-not
- notice any significant change in speed
- The performance of software usually depends on just a few parts of the code, and changes anywhere else don’t
- make an appreciable difference.
-  my overall advice on performance with refactoring is: Most of the time you should ignore it. If your refactoring
- introduces performance slow-downs, finish refactoring first and do performance tuning afterwards.
+~~~
 
-   The second aspect I want to call your attention to is how small the steps were to remove volumeCredits. Here are the four steps, each followed by compiling, testing, and committing to my local source code repository:
+---
+
+Let me pause for a bit to talk about what I’ve just done here. Firstly, I know readers will again be worrying about performance with this change, as many people are wary of repeating a loop. But most of the time, rerunning a loop like this has a negligible effect on performance. If you timed the code before and after this refactoring, you would probably not notice any significant change in speed—and that’s usually the case. Most programmers, even experienced ones, are poor judges of how code actually performs. Many of our intuitions are broken by clever compilers, modern caching techniques, and the like. The performance of software usually depends on just a few parts of the code, and changes anywhere else don’t make an appreciable difference.
+
+But “mostly” isn’t the same as “alwaysly.” Sometimes a refactoring will have a significant performance implication. Even then, I usually go ahead and do it, because it’s much easier to tune the performance of well-factored code. If I introduce a significant performance issue during refactoring, I spend time on performance tuning afterwards. It may be that this leads to reversing some of the refactoring I did earlier—but most of the time, due to the refactoring, I can apply a more effective performance-tuning enhancement instead. I end up with code that’s both clearer and faster.
+
+So, my overall advice on performance with refactoring is: Most of the time you should ignore it. If your refactoring introduces performance slow-downs, finish refactoring first and do performance tuning afterwards.
+
+---
+
+### Small steps at a time → Baby Step
+
+The second aspect I want to call your attention to is how small the steps were to remove volumeCredits. Here are the four steps, each followed by compiling, testing, and committing to my local source code repository:
+
 ● Split Loop (227) to isolate the accumulation
+
 ● Slide Statements (223) to bring the initializing code next to the accumulation
+
 ● Extract Function (106) to create a function for calculating the total
+
 ● Inline Variable (123) to remove the variable completely
+
 I confess I don’t always take quite as short steps as these—but whenever things get difficult, my first reaction is to take shorter steps. In particular, should a test fail during a refactoring, if I can’t immediately see and fix the problem, I’ll revert to my last good commit and redo what I just did with smaller steps. That works because I commit so frequently and because small steps are the key to moving quickly, particularly when working with difficult code.
+
+---
         
-  Remove totalAmount
+### Remove totalAmount
+
 I then repeat that sequence to remove totalAmount. I start by splitting the loop (compile-test-commit), then I slide the variable initialization (compile-test-commit), and then I extract the function. There is a wrinkle here: The best name for the function is “totalAmount”, but that’s the name of the variable, and I can’t have both at the same time. So I give the new function a random name when I extract it (and compile-test-commit).
+
 totalAmount 에도 totalVolumeCredits 와 동일한 리팩토링을 적용한다.
- 
-   function statement (invoice, plays) {
+
+---
+
+### Refactored Code
+
+~~~js
+function statement (invoice, plays) {
 let result = `Statement for ${invoice.customer}\n`; for (let perf of invoice.performances) {
 // print line for this order
 result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`; }
 result += `Amount owed is ${usd(totalAmount())}\n`; result += `You earned ${totalVolumeCredits()} credits\n`; return result;
+~~~
 
-  Compile-Test-Commit
+---
+
+### Compile-Test-Commit
+
+---
+
+
 
   SPLITTING THE PHASES OF CALCULATION AND FORMATTING
 So far, my refactoring has focused on so that and . This is often the case early in refactoring.
@@ -766,10 +930,12 @@ const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance)
 const result = Object.assign({}, aPerformance); result.play = calculator.play;
 result.amount = amountFor(result); result.volumeCredits = volumeCreditsFor(result); return result;
 }
- 
-  Compile-Test-Commit
 
-  Moving Functions into the Calculator
+---
+# Compile-Test-Commit
+---
+
+Moving Functions into the Calculator
 The next bit of logic I move is rather more substantial for calculating the amount for a performance. I’ve moved functions around casually while rearranging nested functions—but this is a deeper change in the context of the function, so I’ll step through the Move Function(198) refactoring. The first part of this refactoring is to copy the logic over to its new context—the calculator class. Then, I adjust the code to fit into its new home, changing aPerformance to this.performance and playFor(aPerformance) to this.play
     
  get amount() {
