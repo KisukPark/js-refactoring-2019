@@ -1,10 +1,10 @@
 {
   "name": "refactoring0305",
   "version": "1.0.0",
-  "description": "",
+  "description": "Javascript Refactoring Study",
   "main": "index.js",
   "directories": {
-    "doc": "doc"
+    "test": "test"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,5 +14,13 @@
   "license": "ISC",
   "devDependencies": {
     "mocha": "^6.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KisukPark/js-refactoring-2019.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KisukPark/js-refactoring-2019/issues"
+  },
+  "homepage": "https://github.com/KisukPark/js-refactoring-2019#readme"
 }
