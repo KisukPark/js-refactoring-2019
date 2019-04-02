@@ -19,7 +19,7 @@
 - statement 함수 내부 코드를 전부 선택한다.
   - ![image-20190331204147363](./imgs/img01.png)
 - Refactor "Extract Method" 를 선택한다.
-  - ![image-20190331204528284](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img02.png)
+  - ![image-20190331204528284](./imgs/img02.png)
 - Global scope 를 선택한다.
   - ![image-20190331204623664](./imgs/img03.png)
 - renderPlainText
@@ -147,9 +147,9 @@
 
 
 - renderPlainText 코드 내 playFor 함수 쿼리를 performance.play 참조로 변경한다.
-  - renderPlainText  코드 내 :![image-20190331220142293](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img18.png)
-  - volumeCreditsFor 코드 내 :![image-20190331220215158](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img19.png)
-  - amoutFor 코드 내 :![image-20190331220247287](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img20.png)
+  - renderPlainText  코드 내 :![image-20190331220142293](./imgs/img18.png)
+  - volumeCreditsFor 코드 내 :![image-20190331220215158](./imgs/img19.png)
+  - amoutFor 코드 내 :![image-20190331220247287](./imgs/img20.png)
 - 테스트 수행
   - 테스트가 전부 통과되었는지 확인한다. 
 
@@ -283,7 +283,7 @@
     
     ```
 
-  - 코드 변경 후 : ![image-20190331225355457](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img34.png)
+  - 코드 변경 후 : ![image-20190331225355457](./imgs/img34.png)
 
 - renderPlainText 코드 수정 : 
 
@@ -329,7 +329,7 @@
 - totalVolumeCredits 파라미터 전달 
 
   - Refactor "ChangeSignature" 메뉴 선택 : ![image-20190331230325044](./imgs/img38.png)
-  - data 파라미터 추가 : ![image-20190331230548715](/Users/leo/refactoring/study/handsonlab/4-SplittingThePhases/imgs/img39.png)
+  - data 파라미터 추가 : ![image-20190331230548715](./imgs/img39.png)
   - 리팩토링 후 : ![image-20190331230731605](./imgs/img40.png)
 
 - 테스트 수행
