@@ -19,11 +19,19 @@
 - statement for 문 내에 각각의 performance 에 대한 금액을 계산하는 switch 문이 존재한다.
 - 이를  별도의 함수로 추출하면 for 문을 이해하기도 쉽고 나중에 switch 문을 리팩토링할 때도 편리할 것 같다.
 
+
+
 ### amountFor 함수 추출
+
+- 임시로 switch 문 default 문  코멘트 처리하기
+
+  - 아래 영역을 선택하고 바로 "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragement has multiple exit points" 문구가 출력되는 경우가 있다.
+  - 리팩토링 예시 : ![image-20190404150559461](./imgs/amtfor01.png)
+  - 아래와 같이 임시로 default 문을 코멘트 처리한다.![image-20190404151142212](./imgs/amtfor02.png)
 
 - 리팩토링을 이용하여 추출할 코드 영역을 선택한다.
 
-  - ![img](./imgs/img1.png)
+  - ![image-20190404151320650](./imgs/img1.png)
 
 - 해당 영역에서 오른쪽 마우스 버튼을 선택하고, "Extract Method" 를 이용하여 함수를 생성한다.
 
@@ -31,14 +39,16 @@
 
 - 함수 생성 Scope는 "function statement"를 선택한다.
 
-  - ![img](./imgs/img3.png)
+  - ![image-20190404151418192](./imgs/img3.png)
 
-- Extract Function 수행 후, amountFor 함수 위치를 statement 함수 하단으로 이동해 준다.
+- Extract Function 수행 후, amountFor 함수 위치를 statement 함수 하단으로 이동해 준다. 코멘트 처리한 default 문도 코멘트를 지운다.
+
+  - 코드 예시 : 
 
   - ```javascript
         for (let perf of invoice.performances) {
             const play = plays[perf.playID];
-            let thisAmount = amountFor(play);
+            let thisAmount = amountFor(play, perf);
     
             // add volume credits
             volumeCredits += Math.max(perf.audience - 30, 0);
@@ -49,8 +59,11 @@
             result += `  ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
             totalAmount += thisAmount;
         }
+        result += `Amount owed is ${format(totalAmount/100)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
     
-        function amountFor(play) {
+        function amountFor(play, perf) {
             let thisAmount = 0;
     
             switch (play.type) {
@@ -74,10 +87,13 @@
         }
     ```
 
-- 테스트 수행  :
+  - 코드 수정 후 : 
 
-  - 테스트 수행 결과 에러가 발생한다. 원인이 뭘까요?
-  - ![img](./imgs/img4.png)
+  - ![image-20190404151832023](./imgs/amtfor03.png)
+
+- 테스트 수행
+
+  - 테스트가 전부 통과되었는지 확인한다.
 
 
 
@@ -86,9 +102,9 @@
 
 - Refactor 메뉴의 "Change Signature" 기능을 이용하여 amountFor 의 Signature 를 변경한다.
   -  마우스를 이용하여 코드 상에서 amountFor 를 선택한 후 아래 그림과 같이 "Change Signature" 리팩토링을 수행한다.
-  - ![image-20190324101424864](./imgs/img5.png)
-  - perf 를 함수 첫번째 파라미터로 설정한다. "value in the call" 은 함수를 호출하는 코드에서 입력할 변수나 값을 지정한다. 여기서는 perf 로 동일하게 지정한다. ![image-20190324101611545](./imgs/img6.png)
-  - 리팩토링 수행 후 :  ![image-20190324101802842](./imgs/img7.png)
+  -  ![image-20190404152129733](./imgs/img5.png)
+  -  perf 를 함수 첫번째 파라미터로 설정한다. "value in the call" 은 함수를 호출하는 코드에서 입력할 변수나 값을 지정한다. 여기서는 perf 로 동일하다. "+" 버튼 옆 "Up" 버튼을 이용하여 perf 를 첫번째 파라미터로 이동한다. ![image-20190404152234903](./imgs/img6.png)
+  -  리팩토링 수행 후 :  ![image-20190324101802842](./imgs/img7.png)
 - 테스트 수행
   - 테스트가 전부 통과되었는지 확인한다.
 
