@@ -28,8 +28,8 @@
 - 임시로 switch 문 default 문  코멘트 처리하기
 
   - 아래와 같이 amountFor 코드 영역을 선택하고 바로 "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragment has multiple exit points" 문구가 출력되는 경우가 있다.
-  - 리팩토링 문구 예시 :  <img src="./imgs/amtfor01.png" align="left">
-  - 아래와 같이 임시로 default 문을 코멘트 처리한다.![image-20190404151142212](./imgs/amtfor02.png)
+  - 리팩토링 문구 예시 :  ![image](./imgs/amtfor01.png)
+  - 아래와 같이 임시로 default 문을 코멘트 처리한다. ![image-20190404151142212](./imgs/amtfor02.png)
 
 - 리팩토링을 이용하여 추출할 코드 영역을 선택한다.
 
