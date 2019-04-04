@@ -188,14 +188,15 @@
 ### playFor 함수 추출
 
 - playFor 함수 추출
-  - for 문 내에서 play 정보를 검색하는 아래 코드를 선택한다.![image-20190324105948221](./imgs/playfor01.png)
-  - Refactor "Extract Method" 를 이용하여 playFor 함수를 추출한다.![image-20190324110420747](./imgs/playfor02.png)
-  - 함수 생성 Scope는 "function statement"를 선택한다.
+  - for 문 내에서 play 정보를 검색하는 아래 코드를 선택한다.![image-20190404154117471](./imgs/playfor01.png)
+  - Refactor "Extract Method" 를 이용하여 playFor 함수를 추출한다. ![image-20190404154214141](./imgs/playfor02.png)
+  - 함수 생성 Scope는 "function statement"를 선택한다. ![image-20190404154332604](./imgs/playfor15.png)
   - 생성된 함수는 amountFor 함수 위치 바로 위로 이동하여 코드를 정리한다. 
-  - Extract Method 수행 후 : ![image-20190324111921619](./imgs/playfor03.png)
+  - Extract Method 수행 후 :  ![image-20190404154602561](./imgs/playfor03.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
-  - ![image-20190324112028035](./imgs/playfor04.png)
+
+
 
 
 
