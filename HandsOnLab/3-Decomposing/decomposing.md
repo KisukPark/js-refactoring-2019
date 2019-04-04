@@ -21,12 +21,14 @@
 
 
 
+
+
 ### amountFor 함수 추출
 
 - 임시로 switch 문 default 문  코멘트 처리하기
 
-  - 아래 영역을 선택하고 바로 "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragement has multiple exit points" 문구가 출력되는 경우가 있다.
-  - 리팩토링 예시 : ![image-20190404150559461](./imgs/amtfor01.png)
+  - 아래와 같이 amountFor 코드 영역을 선택하고 바로 "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragment has multiple exit points" 문구가 출력되는 경우가 있다.
+  - 리팩토링 문구 예시 :  <img src="./imgs/amtfor01.png" align="left">
   - 아래와 같이 임시로 default 문을 코멘트 처리한다.![image-20190404151142212](./imgs/amtfor02.png)
 
 - 리팩토링을 이용하여 추출할 코드 영역을 선택한다.
@@ -98,6 +100,8 @@
 
 
 
+
+
 ### amountFor Signature 변경
 
 - Refactor 메뉴의 "Change Signature" 기능을 이용하여 amountFor 의 Signature 를 변경한다.
@@ -107,6 +111,8 @@
   -  리팩토링 수행 후 :  ![image-20190324101802842](./imgs/img7.png)
 - 테스트 수행
   - 테스트가 전부 통과되었는지 확인한다.
+
+
 
 
 
@@ -122,15 +128,49 @@
 
 
 
+
+
 ### amountFor perf 파라미터 이름 변경
 
-- perf 파라미터를 코딩 스타일에 맞게 변경한다.
+- perf 파라미터를 각자의 코딩 스타일에 맞게 변경한다.
   - perf 를 aPerformance 로 변경하여 함수 파라미터에 타입 및 의미를 부여한다.
-  - Refactor "Rename" 메뉴를 이용하여 perf 를 aPerformance 로 변경한다.![image-20190324104313016](./imgs/img10.png)
-  - 이름 변경 후 : ![image-20190324104558869](./imgs/img11.png)
+
+  - Refactor "Rename" 메뉴를 이용하여 perf 를 **aPerformance** 로 변경한다.![image-20190404152922405](./imgs/img10.png)
+
+  - 이름 변경 후 : 
+
+    ```javascript
+        function amountFor(aPerformance, play) {
+            let result = 0;
+    
+            switch (play.type) {
+                case "tragedy":
+                    result = 40000;
+                    if (aPerformance.audience > 30) {
+                        result += 1000 * (aPerformance.audience - 30);
+                    }
+                    break;
+                case "comedy":
+                    result = 30000;
+                    if (aPerformance.audience > 20) {
+                        result += 10000 + 500 * (aPerformance.audience - 20);
+                    }
+                    result += 300 * aPerformance.audience;
+                    break;
+                default:
+                    throw new Error(`unknown type: ${play.type}`);
+            }
+            return result;
+        }
+    ```
+
+    
 
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
+
+
 
 
 
