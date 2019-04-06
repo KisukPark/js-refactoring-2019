@@ -656,14 +656,22 @@
     ```
     it('HTML Rendering 테스트',() => {
             let invoice = {
-                "customer" : "BigCo",
-                "performances" : [
+                customer: "Gildong",
+                performances: [
                     {
-                        "playID": "as-like",
-                        "audience": 21
+                        playID: 0,
+                        audience: 30
                     }
                 ]
             };
+    
+            let plays = {
+                0: {
+                    "name": "Hamlet",
+                    "type": "tragedy"
+                }
+            };
+            
             let result = htmlStatement(invoice,plays);
             assert.equal(result,"");
         });
@@ -686,21 +694,30 @@
     ```
         it('HTML Rendering 테스트',() => {
             let invoice = {
-                "customer" : "BigCo",
-                "performances" : [
+                customer: "Gildong",
+                performances: [
                     {
-                        "playID": "as-like",
-                        "audience": 21
+                        playID: 0,
+                        audience: 30
                     }
                 ]
             };
-            let result = htmlStatement(invoice,plays);
-            assert.equal(result,"<h1>Statement for BigCo</h1>\n" +
+    
+            let plays = {
+                0: {
+                    "name": "Hamlet",
+                    "type": "tragedy"
+                }
+            };
+
+            const result = htmlStatement(invoice, plays);
+            assert.equal(result, "<h1>Statement for Gildong</h1>\n" +
                 "<table>\n" +
-                "<tr><th>play</th><th>seats</th><th>cost</th></tr>  <tr><td>As You Like It</td><td>21</td><td>$468.00</td></tr>\n" +
+                "<tr><th>play</th><th>seats</th><th>cost</th></tr>  <tr><td>Hamlet</td><td>$400.00</td><td>30</td></tr>\n" +
                 "</table>\n" +
-                "<p>Amount owed is <em>$468.00</em></p>\n" +
-                "<p>You earned <em>4</em> credits</p>\n");
+                "<p>Amount owed is <em>$400.00</em></p>\n" +
+                "<p>You earned <em>0</em> credits</p>\n");
+            
         });
     ```
 
