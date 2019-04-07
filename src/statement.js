@@ -15,10 +15,10 @@ function statement (invoice, plays) {
         return plays[aPerformance.playID]
     }
 
-    return renderPlainText(statementData, plays);
+    return renderPlainText(statementData);
 }
 
-function renderPlainText(data, plays) {
+function renderPlainText(data) {
     let result = `Statement for ${data.customer}\n`;
     for (let perf of data.performances) {
 
