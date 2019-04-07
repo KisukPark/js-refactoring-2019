@@ -185,4 +185,26 @@ describe('statment', async function() {
             "Amount owed is $1,898.00\n" +
             "You earned 14 credits\n");
     });
+
+    it('tragedy play and audience is more than 30 for html', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 31
+                }
+            ]
+        };
+
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "tragedy"
+            }
+        };
+        const result = htmlStatement(invoice, plays);
+        assert.equal(result, "");
+    });
+
 });
