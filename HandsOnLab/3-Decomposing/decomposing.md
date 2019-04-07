@@ -185,6 +185,8 @@
   - Replace Temp with Query
   - Inline Variable
 
+
+
 ### playFor 함수 추출
 
 - playFor 함수 추출
@@ -198,26 +200,24 @@
 
 
 
-
-
-### playFor Signature 변경
-
-- 리팩토링 "Change Signature" 를 이용하여 playFor 함수에 perf 파라미터를 전달한다.
-  - Refactor "Change Signature" 메뉴를 선택한다.![image-20190324112248332](./imgs/playfor05.png)
-  - perf 파라미터를 추가한다. 호출부도 perf 로 동일하게 지정한다.![image-20190324112403940](./imgs/playfor06.png)
-  - 리팩토링 후  : ![image-20190324113041795](./imgs/playfor07.png)
-- 테스트 수행
-  - 테스트를 수행하고 그 결과를 확인한다.
-
-
-
 ### playFor perf 파라미터 이름 변경
 
 - playFor perf 파라미터를 코딩 스타일에 맞게 변경한다.
   - perf 를 aPerformance 로 변경하여 함수 파라미터에 타입 및 의미를 부여한다.
-  - Refactor "Rename" 메뉴를 이용하여 함수 파라미터 명칭을 한번에 변경한다.![image-20190324113320945](./imgs/playfor08.png)
-  - Rename 리랙토링 이후 :![image-20190324113440734](./imgs/playfor09.png)
+
+  - Refactor "Rename" 메뉴를 이용하여 함수 파라미터 명칭을 한번에 변경한다. ![image-20190404155754734](./imgs/playfor08.png)
+
+  - Rename 리랙토링 이후 :  
+
+    ```javascript
+        function playFor(aPerformance) {
+            return plays[aPerformance.playID];
+        }
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
@@ -226,10 +226,39 @@
 
 - for 문 내에 존재하는 play 변수를 리팩토링 "Inline Variable" 를 이용하여 제거한다.
   - play 변수를 선택하고 Refactor "Inline Variable" 메뉴를 선택한다.![image-20190324124052128](./imgs/playfor10.png)
-  - Inline 옵션을 선택하고 "Refactor" 를 선택한다.![image-20190324124139333](./imgs/playfor11.png)
-  - 리팩토링 후 :![image-20190324124231047](./imgs/playfor12.png)
+
+  - Inline 옵션을 선택하고 "Refactor" 를 선택한다. ![image-20190404160436675](./imgs/playfor11.png)
+
+  - 리팩토링 후 : 
+
+    ```javascript
+        for (let perf of invoice.performances) {
+            let thisAmount = amountFor(perf, playFor(perf));
+    
+            // add volume credits
+            volumeCredits += Math.max(perf.audience - 30, 0);
+            // add extra credit for every ten comedy attendees
+            if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
+    
+            // print line for this order
+            result += `  ${playFor(perf).name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
+            totalAmount += thisAmount;
+        }
+        result += `Amount owed is ${format(totalAmount/100)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    
+        function playFor(aPerformance) {
+            return plays[aPerformance.playID];
+        }
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
+
+
 
 
 
@@ -242,9 +271,11 @@
   - Refactor Rename 메뉴를 이용하여 변경할 때 함수 파라미터까지 영향을 받아 정상 작동하지 않는다. 
   - amountFor 함수 코드에서 play 참조를  수작업으로 playFor(aPerformance) 로 변경한다.
   - ![image-20190324124801857](./imgs/playfor13.png)
-  - 리팩토링 후 : ![image-20190324125330652](./imgs/playfor14.png)
+  - play 변수 변경 후 : ![image-20190324125330652](./imgs/playfor14.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
+
+
 
 
 
@@ -252,9 +283,39 @@
 - amountFor 로 전달되는 play 파라미터가 함수 코드 내에서 사용되지 않는다. 이를 "Change Signature" 리팩토링을 이용하여 제거한다.
 - amountFor play 파라미터 제거
   - amountFor play 를 선택한 후, Refactor "ChangeSignature" 메뉴를 선택한다.![image-20190324125810645](./imgs/amountfor01.png)
+
   - play Name 을 제거한 후, "Refactor" 버튼을 클리한다.![image-popup](./imgs/amountfor02.png)
-  - 리팩토링 후 amountFor 코드 :![image-20190324132057353](./imgs/amountfor03.png)
+
+  - play 파라미터 리팩토링 후  : 
+
+    ```javascript
+        function amountFor(aPerformance) {
+            let result = 0;
+    
+            switch (playFor(aPerformance).type) {
+                case "tragedy":
+                    result = 40000;
+                    if (aPerformance.audience > 30) {
+                        result += 1000 * (aPerformance.audience - 30);
+                    }
+                    break;
+                case "comedy":
+                    result = 30000;
+                    if (aPerformance.audience > 20) {
+                        result += 10000 + 500 * (aPerformance.audience - 20);
+                    }
+                    result += 300 * aPerformance.audience;
+                    break;
+                default:
+                    throw new Error(`unknown type: ${playFor(aPerformance).type}`);
+            }
+            return result;
+        }
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
@@ -263,14 +324,43 @@
 
 ## Inline thisAmount
 
-
-
-- Inline thisAmount
+- thisAmount 변수를 선택하고, 리팩토링 "Inline" 메뉴를 실행한다. 
   - ![image-20190324132900268](./imgs/inline01.png)
-  - ![image-20190324132945258](./imgs/inline02.png)
-  - ![image-20190324133031558](./imgs/inline03.png)
 
+  - Inline 안내창 : ![image-20190324132945258](./imgs/inline02.png)
 
+  - 리택토링 수행 후 :  
+
+    ```javascript
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let volumeCredits = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+        const format = new Intl.NumberFormat("en-US",
+            { style: "currency", currency: "USD",
+                minimumFractionDigits: 2 }).format;
+    
+        for (let perf of invoice.performances) {
+            // add volume credits
+            volumeCredits += Math.max(perf.audience - 30, 0);
+            // add extra credit for every ten comedy attendees
+            if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
+    
+            // print line for this order
+            result += `  ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf);
+        }
+        result += `Amount owed is ${format(totalAmount/100)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    
+    ```
+
+    
+
+- 테스트 수행
+
+  - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
