@@ -1,7 +1,14 @@
 function statement (invoice, plays) {
     const statementData = {};
     statementData.customer = invoice.customer;
-    statementData.performances = invoice.performances;
+
+    statementData.performances = invoice.performances.map(enrichPerformance);
+
+    function enrichPerformance(aPerformance) {
+        const result = Object.assign({}, aPerformance);
+
+        return result;
+    }
 
     return renderPlainText(statementData, plays);
 }
