@@ -1,4 +1,4 @@
-var statement = require('../src/statement');
+var {statement, htmlStatement} = require('../src/statement');
 var assert = require('assert');
 
 /**
@@ -204,7 +204,12 @@ describe('statment', async function() {
             }
         };
         const result = htmlStatement(invoice, plays);
-        assert.equal(result, "");
+        assert.equal(result, "<h1>Statement for Gildong</h1>\n" +
+            "<table>\n" +
+            "<tr><th>play</th><th>seats</th><th>cost</th></tr>  <tr><td>Hamlet</td><td>$410.00</td><td>31</td></tr>\n" +
+            "</table>\n" +
+            "<p>Amount owed is <em>$410.00</em></p>\n" +
+            "<p>You earned <em>1</em> credits</p>\n");
     });
 
 });
