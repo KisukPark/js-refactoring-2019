@@ -8,5 +8,5 @@
 
 [4.Splitting the phases of calculation and formatting](./4-SplittingThePhases/splittingphases.md)
 
-[5.Reorganizing the calculations by type](./5-ReorganizingTheCalculations/reorganizing.md)
+[5.Reorganizing the calculations by type](./5-Polymorphism/README.adoc)
 
