@@ -12,7 +12,10 @@
 
 
 
-## 공연 금액 계산 STATEMENT 리팩토링
+
+
+
+## amountFor 리팩토링
 
 ### 코드 분석
 
@@ -174,11 +177,13 @@
 
 
 
-## play 변수 제거
+## playFor 리팩토링
 
 ### 코드 분석
 
-- amountFor 에서 사용하는 play 정보는 함수 호출부에서 파라미터로 전달된다. 코드를 분석해 보면 해당 데이타는 performance 의 playID를 통하여 참조할 수 있음을 알 수 있다. 따라서 이 부분을 파라미터를 이용한 전달이 아닌 함수호출로 변경하고자 한다.
+- amountFor 에서 사용하는 play 정보는 함수 호출부에서 파라미터로 전달된다. 
+- 코드를 분석해 보면 해당 데이타는 performance 의 playID를 통하여 참조할 수 있음을 알 수 있다. 
+- 따라서 이 부분을 파라미터를 이용한 전달이 아닌 함수호출로 변경하고자 한다.
 - 또한 코드가 긴 함수를 리팩토링하고자 할 때 for 문의 임시 변수 play를 제거하면 리팩토링을 수행하는데 매우 편리해 진다.
 - 관련 리팩토링 기법 :
   - Extract Function
@@ -200,9 +205,9 @@
 
 
 
-### playFor perf 파라미터 이름 변경
+### playFor 파라미터 perf 명칭 변경
 
-- playFor perf 파라미터를 코딩 스타일에 맞게 변경한다.
+- playFor  파라미터 perf를 코딩 스타일에 맞게 변경한다.
   - perf 를 aPerformance 로 변경하여 함수 파라미터에 타입 및 의미를 부여한다.
 
   - Refactor "Rename" 메뉴를 이용하여 함수 파라미터 명칭을 한번에 변경한다. ![image-20190404155754734](./imgs/playfor08.png)
@@ -221,7 +226,7 @@
 
 
 
-### for 문 Inline play 변수
+### play 변수 인라인 수행
 
 - for 문 내에 존재하는 play 변수를 리팩토링 "Inline Variable" 를 이용하여 제거한다.
   - play 변수를 선택하고 Refactor "Inline Variable" 메뉴를 선택한다.![image-20190324124052128](./imgs/playfor10.png)
@@ -262,7 +267,7 @@
 
 ## amountFor play 변수 제거
 
-### amountFor play 참조 변경
+### amountFor 파라미터 play 참조 변경
 
 - amountFor 함수 내 play 변수를 playFor 함수로 변경한다.
   - switch 문과 default 문의 play 오브젝트 참조를 playFor(aPerformance) 함수 호출로 변경해 준다. 
@@ -319,7 +324,9 @@
 
 
 
-## thisAmount 변수 인라인
+## thisAmount 변수 참조 제거
+
+### thisAmount 인라인 수행
 
 - thisAmount 변수를 선택하고, 리팩토링 "Inline" 메뉴를 실행한다. 
   - ![image-20190324132900268](./imgs/inline01.png)
@@ -512,7 +519,6 @@
         return result;
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -546,7 +552,6 @@
         return result;
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -590,7 +595,6 @@
         }
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
