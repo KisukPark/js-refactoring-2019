@@ -176,7 +176,9 @@ $ git commit -m "init npm project"
 - git alias 설정
 
 ```
-$ git config --global alias.lol 'log --oneline --graph --decorate'
+$ git config --global alias.lol 'log --oneline --graph --decorate --all'
+
+$ git config --global alias.lob 'log --oneline --graph --decorate'
 ```
 
 - git commit 목록 보기
