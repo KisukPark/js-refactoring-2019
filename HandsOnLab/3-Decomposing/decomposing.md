@@ -215,7 +215,6 @@
         }
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -253,7 +252,6 @@
         }
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -313,7 +311,6 @@
         }
     ```
 
-    
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -322,7 +319,7 @@
 
 
 
-## Inline thisAmount
+## thisAmount 변수 인라인
 
 - thisAmount 변수를 선택하고, 리팩토링 "Inline" 메뉴를 실행한다. 
   - ![image-20190324132900268](./imgs/inline01.png)
@@ -430,7 +427,7 @@
 
 
 
-## Removing the format Variable
+## usd 포맷 함수 리팩토링
 
 ### 코드 분석
 
@@ -485,19 +482,73 @@
 
 
 
-## Removing Total Volume Credits
+## Total Volume Credits 리팩토링
 
 ### Total Volume Credits 계산을 위한 for 문 분리
 
-- For 문은 아래와 같이 분리한다.
-  - ![image-20190324144729303](./imgs/totvolcredits01.png)
-  - ![image-20190324144841461](./imgs/totvolcredits02.png)
+- statement 함수 for 문 total volumeCredits 계산하는 부분을 아래와 같이 분리한다. 
+  - 리픽토링 후 : ![image-20190324144729303](./imgs/totvolcredits01.png)
+
+  - 코드 예시 : 
+
+    ```javascript
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let volumeCredits = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+    
+        for (let perf of invoice.performances) {
+            // print line for this order
+            result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf);
+        }
+    
+        for (let perf of invoice.performances) {
+            volumeCredits += volumeCreditsFor(perf);
+        }
+    
+        result += `Amount owed is ${usd(totalAmount)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
 - volumeCredits 초기화 문장을 for문 바로 위로 이동한다.
   - 이를 리팩토링에서는 Slide Statements 라고 한다.
-  - ![image-20190324145047082](./imgs/totvolcredits03.png)
+
+  - 리팩토링 후 : 
+
+    ![image-20190324145047082](./imgs/totvolcredits03.png)
+
+  - 코드 예시 : 
+
+    ```javascript
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+    
+        for (let perf of invoice.performances) {
+            // print line for this order
+            result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf);
+        }
+    
+        let volumeCredits = 0;
+        for (let perf of invoice.performances) {
+            volumeCredits += volumeCreditsFor(perf);
+        }
+    
+        result += `Amount owed is ${usd(totalAmount)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
@@ -505,16 +556,48 @@
 ### totalVolumeCredits 추출
 
 - totalVolumeCredits 추출
-  - ![image-20190324145449076](./imgs/totvolcredits04.png)
-  - 함수 생성 위치(Scope)는 "function statement"를 선택한다.
+  - 리팩토링 메뉴 : ![image-20190324145449076](./imgs/totvolcredits04.png)
+
+  - 함수 생성 위치(Scope)는 "function statement"를 선택한다. ![image-20190407181826485](./imgs/totvolcredits08.png)
+
   - 생성된 함수는 아래로 이동하여 코드를 정리한다. 
-  - ![image-20190324145636025](./imgs/totvolcredits05.png)
+
+  - 코드 예시 : 
+
+    ```javascript
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+    
+        for (let perf of invoice.performances) {
+            // print line for this order
+            result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf);
+        }
+    
+        let volumeCredits = totalVolumeCredits();
+    
+        result += `Amount owed is ${usd(totalAmount)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    
+        function totalVolumeCredits() {
+            let volumeCredits = 0;
+            for (let perf of invoice.performances) {
+                volumeCredits += volumeCreditsFor(perf);
+            }
+            return volumeCredits;
+        }
+    ```
+
+    
 - 테스트 수행
+
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
-### Inline volumeCredits
+### volumeCredits 변수 인라인 수행
 
 - 임시 변수 volumeCredits 을 totalVolumeCredits 호출로 대치한다.
 
@@ -530,7 +613,6 @@
         let result = `Statement for ${invoice.customer}\n`;
     
         for (let perf of invoice.performances) {
-    
             // print line for this order
             result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
             totalAmount += amountFor(perf);
@@ -539,14 +621,6 @@
         result += `Amount owed is ${usd(totalAmount)}\n`;
         result += `You earned ${totalVolumeCredits()} credits\n`;
         return result;
-    
-        function totalVolumeCredits() {
-            let volumeCredits = 0;
-            for (let perf of invoice.performances) {
-                volumeCredits += volumeCreditsFor(perf);
-            }
-            return volumeCredits;
-        }
     ```
 
 - 테스트 수행
@@ -555,15 +629,17 @@
 
 
 
-## Removing totalAmount
+## Total Amount 리팩토링
 
 
 
-### For 문 분리
+### Total Amount 계산을 위한 for 문 분리
 
-- for 문 분리
+- statement 문의 for 문을 totalAmount 를 계산하기 위하여 아래와 같이 분리한다. 분리
 
-  - totalAmount 를 계산하기 위한여 for 문을 분리한다. 
+  - 리팩토링 후 : ![image-20190407182414632](./imgs/totamt04.png)
+
+  - 코드 예시 : 
 
   - ```javascript
     function statement (invoice, plays) {
@@ -571,7 +647,6 @@
         let result = `Statement for ${invoice.customer}\n`;
     
         for (let perf of invoice.performances) {
-    
             // print line for this order
             result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
         }
@@ -591,16 +666,20 @@
 
 
 
-### totalAmount 초기화 문장 이동
+### totalAmount 변수 초기화 문장 이동
 
 - totalAmount 선언 문장을 for 문 바로 위까지 이동한다.
 
+  - 리픽토링 후 : ![image-20190407182638276](./imgs/totamt05.png)
+
+  - 코드 예시 :
+
   - ```javascript
     function statement (invoice, plays) {
+    
         let result = `Statement for ${invoice.customer}\n`;
     
         for (let perf of invoice.performances) {
-    
             // print line for this order
             result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
         }
@@ -627,20 +706,20 @@
 
   - 저자는 함수명으로 totalAmount 를 사용하고 싶었으나 이미 같은 이름을 가진 변수가 존재하여 임으로 지정하고 추후 "Rename Funciton"을 이용하여 이름을 변경하고자 하였다.
 
-  - ![image-20190324150855632](./imgs/totamt01.png)
+  - 리팩토링 메뉴 : ![image-20190324150855632](./imgs/totamt01.png)
 
-  - 함수 생성 위치(Scope)는 "function statement"를 선택한다.
+  - 함수 생성 위치(Scope)는 "function statement"를 선택한다. ![image-20190407182922044](./imgs/totamt06.png)
 
-  - 생성된 함수는 아래로 이동하여 코드를 정리한다. 
+  - 생성된 함수는 아래로 이동하여 코드를 정리한다.  ![image-20190407183109137](/Users/leo/refactoring/study/js-refactoring-2019/HandsOnLab/3-Decomposing/imgs/totamt07.png)
 
-  - 함수 추출 리팩토링 후 :
+  - 코드 예시  :
 
   - ```javascript
     function statement (invoice, plays) {
+    
         let result = `Statement for ${invoice.customer}\n`;
     
         for (let perf of invoice.performances) {
-    
             // print line for this order
             result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
         }
