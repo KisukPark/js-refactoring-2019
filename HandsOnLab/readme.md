@@ -2,7 +2,7 @@
 
 [1.Warm up](./1-WarmUp/warmup.md)
 
-[2.Test Code 작성](./2-TestCode/testcode.md)
+[2.Test Code 작성](./2-TestCode/readme.md)
 
 [3.Decomposing the statement function](3-Decomposing/readme.md)
 
