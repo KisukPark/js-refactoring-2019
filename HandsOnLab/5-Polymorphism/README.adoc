@@ -71,7 +71,7 @@ image:./images/4.png[]
 === Moving Functions into the Calculator
 
 ===== ammountFor 함수를 PerformanceCalculator 클래스 내부로 옮김
-* `amountFor` 함수를 PerformanceCalculator 클래스로 복사
+* amountFor 함수를 PerformanceCalculator 클래스로 복사
 
 image:./images/5.png[]
 
@@ -129,14 +129,14 @@ result.amount = calculator.amount;
 image:./images/8.png[]
 
 * 테스트 실행
-* `amountFor` 함수 제거 
+* amountFor 함수 제거 
 
 ===== PerformanceCalculator 클래스 내부로 volumeCreditsFor 함수 이동
 * volumeCreditsFor를 PerformanceCalculator 클래스로 복사
 
 image:./images/9.png[]
 
-* PerformanceCalculator 클래스에서 `volumeCredits` getter로 변경
+* PerformanceCalculator 클래스에서 volumeCredits getter로 변경
 
 [source, js]
 ----
@@ -168,6 +168,8 @@ result.volumeCredits = calculator.volumeCredits;
 
 image:./images/12.png[]
 
+* volumeCreditsFor 함수 제거 
+
 === Making the Performance Calculator Polymorphic
 
 ===== createPerformanceCalculator 함수 추출
@@ -181,7 +183,7 @@ image:./images/13.png[]
 image:./images/14.png[]
 
 ===== TragedyCalculator 클래스 생성
-* createPerformanceCalculator 함수에서 Play Type에 따른 switch-case 작성
+* createPerformanceCalculator 함수에서 Play-type에 따른 switch-case 작성
 
 [source, js]
 ----
@@ -194,11 +196,11 @@ function createPerformanceCalculator(aPerformance, aPlay) {
 }
 ----
 
-* `TragedyCalculator` 클래스 생성 
+* TragedyCalculator 클래스 생성 
 
 image:./images/15.png[]
 
-* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `tragedy` 에 해당하는 로직 처리
+* PerformanceCalculator 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `tragedy` 에 해당하는 로직 처리
 
 [source, js]
 ----
@@ -220,11 +222,11 @@ image:./images/16.png[]
 * 테스트 실행
 
 ===== ComedyCalculator 클래스 생성
-* createPerformanceCalculator 함수에서 Play Type에 따른 switch-case 작성
+* createPerformanceCalculator 함수에서 Play-type에 따른 switch-case 작성
 
 [source, js]
 ----
-unction createPerformanceCalculator(aPerformance, aPlay) {
+function createPerformanceCalculator(aPerformance, aPlay) {
     switch (aPlay.type) {
         case "tragedy": return new TragedyCalculator(aPerformance, aPlay);	   
         case "comedy": return new ComedyCalculator(aPerformance, aPlay);
@@ -234,7 +236,7 @@ unction createPerformanceCalculator(aPerformance, aPlay) {
 }
 ----
 
-* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `comedy` 에 해당하는 로직 처리
+* PerformanceCalculator를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `comedy` 에 해당하는 로직 처리
 
 [source, js]
 ----
@@ -256,7 +258,7 @@ image:./images/17.png[]
 * 테스트 실행
 
 ===== volumeCredits 로직 처리
-* `PerformanceCalculator, ComedyCalculator` 에 맞게 volumeCredits 로직 분리
+* PerformanceCalculator, ComedyCalculator 에 맞게 volumeCredits 로직 분리
 
 [source, js]
 ----
@@ -279,7 +281,13 @@ get volumeCredits() {
 
 [source, js]
 ----
-default: return new PerformanceCalculator(aPerformance, aPlay);
+function createPerformanceCalculator(aPerformance, aPlay) {
+    switch (aPlay.type) {
+        case "tragedy": return new TragedyCalculator(aPerformance, aPlay);	   
+        case "comedy": return new ComedyCalculator(aPerformance, aPlay);
+        default: return new PerformanceCalculator(aPerformance, aPlay);
+    }	    
+}
 ----
 
 image:./images/18.png[]
