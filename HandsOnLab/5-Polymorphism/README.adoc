@@ -9,23 +9,58 @@
 === Creating a Performance Calculator
 
 ===== PerformanceCalculator 클래스 생성 
-* enrichPerformance 함수에서 `const calculator = new PerformanceCalculator(aPerformance);` 추가 
-* Webstorm에서 아래 그림 같이 클래스 생성할 수 있도록 툴팁이 뜨는 것을 확인할 수 있음
-* 클릭 후, PerformanceCalculator 클래스 생성
+* PerformanceCalculator 클래스 생성
 
 image:./images/1.png[]
 
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/1bd893bbc4740a07f1bbec7cb59a6781170e42f5[PerformanceCalculator 클래스 생성 코드]
+[source, js]
+----
+class PerformanceCalculator {
+    constructor(aPerformance) {
+        this.performance = aPerformance;
+    }
+}
 
-===== PerformanceCalculator 클래스의 생성자 play 전달
-* 관련 데이터를 한 곳으로 모으면 일관성을 유지할 수 있으며 코드가 명확해지기 때문에 `playFor(result)` 를 PerformanceCalculator 클래스 생성자로 옮김
-* `const calculator = new PerformanceCalculator(aPerformance, playFor(result));`
+
+function enrichPerformance(aPerformance) {
+    let calculator = new PerformanceCalculator(aPerformance);
+
+    // ...
+----
+
+===== PerformanceCalculator 클래스 생성자로 play 전달
+* 코드 추가 
+
+[source, js]
+----
+class PerformanceCalculator {
+    constructor(aPerformance, aPlay) {
+        this.performance = aPerformance;
+        this.play = aPlay;
+    }
+}
+
+function enrichPerformance(aPerformance) {
+    let calculator = new PerformanceCalculator(aPerformance, playFor(result));
+    
+    // ...
+----
+
 * 테스트 실행
 
 image:./images/2.png[]
 
-* `const calculator = new PerformanceCalculator(aPerformance, playFor(result));` => `const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));` 변경 
-* `result.play = playFor(result)` => `result.play = calculator.play` 변경 
+* 코드 추가 
+
+[source, js]
+----
+function enrichPerformance(aPerformance) {
+    let calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
+    const result = Object.assign({}, aPerformance);
+    result.play = calculator.play;
+
+    // ...
+----
 
 image:./images/3.png[]
 
@@ -33,16 +68,50 @@ image:./images/4.png[]
 
 * 테스트 실행
 
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/40903305ddaa71d59c81bb04708ee7ba61138fac[play 전달 코드]
-
 === Moving Functions into the Calculator
 
 ===== ammountFor 함수를 PerformanceCalculator 클래스 내부로 옮김
-* amountFor를 PerformanceCalculator 클래스 내부로 복사함
+* `amountFor` 함수를 PerformanceCalculator 클래스로 복사
 
 image:./images/5.png[]
 
-* PerformanceCalculator 클래스에 맞게 코드 수정함
+* PerformanceCalculator 클래스에서 `amount` getter로 변경
+
+[source, js]
+----
+class PerformanceCalculator {
+    // ...
+
+    get amount() {
+        let result = 0;
+        let play = this.performance.play;
+
+        switch (this.play.type) {
+            case "tragedy":
+                result = 40000;
+
+                if (this.performance.audience > 30) {
+                    result += 1000 * (this.performance.audience - 30);
+                }
+
+                break;
+            case "comedy":
+                result = 30000;
+
+                if (this.performance.audience > 20) {
+                    result += 10000 + 500 * (this.performance.audience - 20);
+                }
+
+                result += 300 * this.performance.audience;
+                break;
+            default:
+                throw new Error(`unknown type: ${play.type}`);
+        }
+
+        return result;
+    }
+}s
+----
 
 image:./images/6.png[]
 
@@ -50,21 +119,39 @@ image:./images/6.png[]
 
 image:./images/7.png[]
 
-* `result.amount = amountFor(result)` 를 `result.amount = calculator.amount` 변경
+* 코드 추가 
+
+[source, js]
+----
+result.amount = calculator.amount;
+----
 
 image:./images/8.png[]
 
 * 테스트 실행
-
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/09299353c051028a631e21071e88fd69f9295a16[PerformanceCalculator 클래스로 amountFor 함수 이동 코드]
+* `amountFor` 함수 제거 
 
 ===== PerformanceCalculator 클래스 내부로 volumeCreditsFor 함수 이동
-* amountFor 이동한 방법과 동일하게 처리함 
-* volumeCreditsFor를 PerformanceCalculator 클래스 내부로 복사함
+* volumeCreditsFor를 PerformanceCalculator 클래스로 복사
 
 image:./images/9.png[]
 
-* PerformanceCalculator 클래스에 맞게 코드를 수정함
+* PerformanceCalculator 클래스에서 `volumeCredits` getter로 변경
+
+[source, js]
+----
+class PerformanceCalculator {
+    // ...
+
+    get volumeCredits() {
+        let result = 0;
+        result += Math.max(this.performance.audience - 30, 0);
+        // add extra credit for every ten comedy attendees
+        if ("comedy" === this.play.type) result += Math.floor(this.performance.audience / 5);
+        return result;
+    }
+}
+----
 
 image:./images/10.png[]
 
@@ -72,18 +159,20 @@ image:./images/10.png[]
 
 image:./images/11.png[]
 
-* `result.volumeCredits = volumeCreditsFor(result)` 에서 `result.volumeCredits = calculator.volumeCredits;` 변경
+* 코드 추가
+
+[source, js]
+----
+result.volumeCredits = calculator.volumeCredits;
+----
 
 image:./images/12.png[]
-
-* 테스트 실행
-
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/5cd0a58a3e0d338d355517dd602e6218a457dfcd[PerformanceCalculator 클래스로 volumeCreditsFor 함수 이동 코드]
 
 === Making the Performance Calculator Polymorphic
 
 ===== createPerformanceCalculator 함수 추출
-* `const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));` 를 `const calculator = createPerformanceCalculator(aPerformance, playFor(aPerformance));` global 스코프로 함수 추출 
+
+* `createPerformanceCalculator` global scope로 함수 추출  
 
 image:./images/13.png[]
 
@@ -91,10 +180,8 @@ image:./images/13.png[]
 
 image:./images/14.png[]
 
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/ef0fa2a67fa9f2040b52aab006f263a68cfdeddd[createPerformanceCalculator 함수 추출 코드]
-
 ===== TragedyCalculator 클래스 생성
-* `createPerformanceCalculator` 함수에서 아래 그림과 같이 switch-case 작성
+* createPerformanceCalculator 함수에서 Play Type에 따른 switch-case 작성
 
 [source, js]
 ----
@@ -107,19 +194,33 @@ function createPerformanceCalculator(aPerformance, aPlay) {
 }
 ----
 
-* `TragedyCalculator` 생성 
+* `TragedyCalculator` 클래스 생성 
 
 image:./images/15.png[]
 
-* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `tragedy` 에 해당하는 로직을 옮기고 TragedyCalculator 클래스에 맞게 수정함
+* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `tragedy` 에 해당하는 로직 처리
+
+[source, js]
+----
+class TragedyCalculator extends PerformanceCalculator {
+    get amount() {
+        let result = 40000;
+
+        if (this.performance.audience > 30) {
+            result += 1000 * (this.performance.audience - 30);
+        }
+
+        return result;
+    }
+}
+----
 
 image:./images/16.png[]
 
 * 테스트 실행
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/589542c09170450573ea114c3331c1c09411dd87[TragedyCalculator 클래스 생성 코드]
 
 ===== ComedyCalculator 클래스 생성
-* `createPerformanceCalculator` 함수에서 아래 그림과 같이 switch-case 작성
+* createPerformanceCalculator 함수에서 Play Type에 따른 switch-case 작성
 
 [source, js]
 ----
@@ -133,14 +234,28 @@ unction createPerformanceCalculator(aPerformance, aPlay) {
 }
 ----
 
-* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `comedy` 에 해당하는 로직을 옮기고 ComedyCalculator 클래스에 맞게 수정함
+* `PerformanceCalculator` 를 상속받고 PerformanceCalculator에 있는 amount 로직 중, `comedy` 에 해당하는 로직 처리
+
+[source, js]
+----
+class ComedyCalculator extends PerformanceCalculator {
+    get amount() {
+        let result = 30000;
+        if (this.performance.audience > 20) {
+            result += 10000 + 500 * (this.performance.audience - 20);
+        }
+
+        result += 300 * this.performance.audience;
+        return result;
+    }
+}
+----
 
 image:./images/17.png[]
 
 * 테스트 실행
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/2a4a1e3f533719b7825c29318dab65086d49045b[ComedyCalculator 클래스 생성 코드]
 
-===== ComedyCalculator의 volumeCredits 함수 이동
+===== volumeCredits 로직 처리
 * `PerformanceCalculator, ComedyCalculator` 에 맞게 volumeCredits 로직 분리
 
 [source, js]
@@ -160,9 +275,16 @@ get volumeCredits() {
 * 테스트 실행
 
 ===== default 셋팅
-* `return new PerformanceCalculator(aPerformance, aPlay);` 에서 `default: return new PerformanceCalculator(aPerformance, aPlay);` 로 수정
+* 코드 추가 
+
+[source, js]
+----
+default: return new PerformanceCalculator(aPerformance, aPlay);
+----
 
 image:./images/18.png[]
+
+* 테스트 실행
 
 === 불필요한 로직 제거 
 
@@ -171,6 +293,3 @@ image:./images/18.png[]
 image:./images/19.png[]
 
 image:./images/20.png[]
-
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/commits/7741bac22ee6ec566ca3586bbae9e7ffa2754ac8[불필요한 로직 제거 코드]
-* https://github.com/yuaming/js-refactoring-2nd/pull/1/files[최종 코드]
