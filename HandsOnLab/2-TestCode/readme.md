@@ -200,7 +200,7 @@ $ touch src/statement.js
 
 
 
-![img](./statement1.png)
+![img](./imgs/statement1.png)
 
 
 
@@ -278,7 +278,7 @@ $ touch src/statement.test.js
 
 
 
-![img](./statement2.png)
+![img](./imgs/statement2.png)
 
 
 
@@ -309,13 +309,13 @@ $ npm run coverage
 
 statement.test.js 파일을 마우스 오른쪽 버튼을 이용하여 선택한 후, "Run 'statement.test.js' with Coverage" 를 실행한다. 
 
-![img](./coverage1.png)
+![img](./imgs/coverage1.png)
 
 
 
 statement.js 파일을 오픈하여, 코드 coverage 상태을 확인해 보면 아래와 같이 코드 라인번호 옆에 색이 표시된다.
 
-![img](./coverage2.png)
+![img](./imgs/coverage2.png)
 
 
 
@@ -344,7 +344,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test3.png)
+![img](./imgs/test3.png)
 
 
 
@@ -373,7 +373,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test4.png)
+![img](./imgs/test4.png)
 
 
 
@@ -402,7 +402,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test5.png)
+![img](./imgs/test5.png)
 
 
 
@@ -431,7 +431,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test6.png)
+![img](./imgs/test6.png)
 
 
 
@@ -462,7 +462,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test7.png)
+![img](./imgs/test7.png)
 
 
 
@@ -499,7 +499,7 @@ Test Code :
 
 Test Coverage :
 
-![img](./test8.png)
+![img](./imgs/test8.png)
 
 
 
