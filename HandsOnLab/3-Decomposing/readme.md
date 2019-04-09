@@ -91,55 +91,55 @@ function statement (invoice, plays) {
 
   - ![image-20190404151418192](./imgs/img3.png)
 
-- Extract Function 수행 후, amountFor 함수 위치를 statement 함수 하단으로 이동해 준다. 코멘트 처리한 default 문도 코멘트를 지운다.
+- Extract Function 수행 후, amountFor 함수 위치를 statement 함수 하단으로 이동해 준다. 
 
-  - 코드 예시 : 
-
-  - ```javascript
-        for (let perf of invoice.performances) {
-            const play = plays[perf.playID];
-            let thisAmount = amountFor(play, perf);
-    
-            // add volume credits
-            volumeCredits += Math.max(perf.audience - 30, 0);
-            // add extra credit for every ten comedy attendees
-            if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
-    
-            // print line for this order
-            result += `  ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
-            totalAmount += thisAmount;
-        }
-        result += `Amount owed is ${format(totalAmount/100)}\n`;
-        result += `You earned ${volumeCredits} credits\n`;
-        return result;
-    
-        function amountFor(play, perf) {
-            let thisAmount = 0;
-    
-            switch (play.type) {
-                case "tragedy":
-                    thisAmount = 40000;
-                    if (perf.audience > 30) {
-                        thisAmount += 1000 * (perf.audience - 30);
-                    }
-                    break;
-                case "comedy":
-                    thisAmount = 30000;
-                    if (perf.audience > 20) {
-                        thisAmount += 10000 + 500 * (perf.audience - 20);
-                    }
-                    thisAmount += 300 * perf.audience;
-                    break;
-                default:
-                    throw new Error(`unknown type: ${play.type}`);
-            }
-            return thisAmount;
-        }
-    ```
+- 코멘트 처리한 default 문도 코멘트를 지운다.
 
   - 코드 수정 후 : 
+    ![image-20190404151832023](./imgs/amtfor03.png)
 
-  - ![image-20190404151832023](./imgs/amtfor03.png)
+- 리팩토링 후 코드 예시 : 
+  ```javascript
+      for (let perf of invoice.performances) {
+          const play = plays[perf.playID];
+          let thisAmount = amountFor(play, perf);
+  
+          // add volume credits
+          volumeCredits += Math.max(perf.audience - 30, 0);
+          // add extra credit for every ten comedy attendees
+          if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+  
+          // print line for this order
+          result += `  ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
+          totalAmount += thisAmount;
+      }
+      result += `Amount owed is ${format(totalAmount/100)}\n`;
+      result += `You earned ${volumeCredits} credits\n`;
+      return result;
+  
+      function amountFor(play, perf) {
+          let thisAmount = 0;
+  
+          switch (play.type) {
+              case "tragedy":
+                  thisAmount = 40000;
+                  if (perf.audience > 30) {
+                      thisAmount += 1000 * (perf.audience - 30);
+                  }
+                  break;
+              case "comedy":
+                  thisAmount = 30000;
+                  if (perf.audience > 20) {
+                      thisAmount += 10000 + 500 * (perf.audience - 20);
+                  }
+                  thisAmount += 300 * perf.audience;
+                  break;
+              default:
+                  throw new Error(`unknown type: ${play.type}`);
+          }
+          return thisAmount;
+      }
+  ```
 
 - 테스트 수행
 
@@ -164,13 +164,13 @@ function statement (invoice, plays) {
 
 
 
-### amountFor  thisAmount 이름 변경
+### amountFor  지역변수 이름 변경
 
 - amountFor 내에서 사용하는 지역변수 thisAmount 를 코딩 스타일에 맞게 변경한다.
-  - 여기서는 저자의 스타일을 따른다.
+  - 여기서는 책에서 언급한 저자의 스타일을 따른다.
   - thisAmount 를 result 로 이름을 변경해 준다.
-  - ![image-20190324102657000](./imgs/img8.png)
-  - 리팩토링 후 : ![image-20190324102744658](./imgs/img9.png)
+  - Refactor "Rename" 메뉴를 선택한다. ![image-20190324102657000](./imgs/img8.png)
+  - 리팩토링 수행 후 : ![image-20190324102744658](./imgs/img9.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -178,14 +178,16 @@ function statement (invoice, plays) {
 
 
 
-### amountFor perf 파라미터 이름 변경
+### amountFor 파라미터 이름 변경
 
-- perf 파라미터를 각자의 코딩 스타일에 맞게 변경한다.
+- 파라미터 perf를 각자의 코딩 스타일에 맞게 변경한다.
+  - 여기서는 책에서 언급한 저자의 스타일을 따른다.
+
   - perf 를 aPerformance 로 변경하여 함수 파라미터에 타입 및 의미를 부여한다.
 
   - Refactor "Rename" 메뉴를 이용하여 perf 를 **aPerformance** 로 변경한다.![image-20190404152922405](./imgs/img10.png)
 
-  - 이름 변경 후 : 
+  - 리팩토링 수행 후 코드 예시 : 
 
     ```javascript
         function amountFor(aPerformance, play) {
@@ -227,9 +229,9 @@ function statement (invoice, plays) {
 ### 코드 분석
 
 - amountFor 에서 사용하는 play 정보는 함수 호출부에서 파라미터로 전달된다. 
-- 코드를 분석해 보면 해당 데이타는 performance 의 playID를 통하여 참조할 수 있음을 알 수 있다. 
+- 코드를 분석해 보면 해당 데이타 play 객체는 performance 의 playID를 통하여 참조할 수 있음을 알 수 있다. 
 - 따라서 이 부분을 파라미터를 이용한 전달이 아닌 함수호출로 변경하고자 한다.
-- 또한 코드가 긴 함수를 리팩토링하고자 할 때 for 문의 임시 변수 play를 제거하면 리팩토링을 수행하는데 매우 편리해 진다.
+- 코드가 긴 함수를 리팩토링하고자 할 때 for 문의 임시 변수 play를 제거하면 리팩토링을 수행하는데 매우 편리해 진다.
 - 관련 리팩토링 기법 :
   - Extract Function
   - Replace Temp with Query
@@ -244,20 +246,20 @@ function statement (invoice, plays) {
   - Refactor "Extract Method" 를 이용하여 playFor 함수를 추출한다. ![image-20190404154214141](./imgs/playfor02.png)
   - 함수 생성 Scope는 "function statement"를 선택한다. ![image-20190404154332604](./imgs/playfor15.png)
   - 생성된 함수는 amountFor 함수 위치 바로 위로 이동하여 코드를 정리한다. 
-  - Extract Method 수행 후 :  ![image-20190404154602561](./imgs/playfor03.png)
+  - 리팩토링 수행 후 :  ![image-20190404154602561](./imgs/playfor03.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
-### playFor 파라미터 perf 명칭 변경
+### playFor 파라미터 perf 이름 변경
 
 - playFor  파라미터 perf를 코딩 스타일에 맞게 변경한다.
   - perf 를 aPerformance 로 변경하여 함수 파라미터에 타입 및 의미를 부여한다.
 
   - Refactor "Rename" 메뉴를 이용하여 함수 파라미터 명칭을 한번에 변경한다. ![image-20190404155754734](./imgs/playfor08.png)
 
-  - Rename 리랙토링 이후 :  
+  - 리랙토링 후 코드 예시 :  
 
     ```javascript
         function playFor(aPerformance) {
@@ -278,7 +280,7 @@ function statement (invoice, plays) {
 
   - Inline 옵션을 선택하고 "Refactor" 를 선택한다. ![image-20190404160436675](./imgs/playfor11.png)
 
-  - 리팩토링 후 : 
+  - 리팩토링 후 코드 예시 : 
 
     ```javascript
         for (let perf of invoice.performances) {
