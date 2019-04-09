@@ -1,140 +1,188 @@
-const assert = require('assert');
-const statement = require('../src/statement');
+var statement = require('../src/statement');
+var assert = require('assert');
 
-describe('statement', () => {
-  it('for empty performances', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: []
-    };
-    let plays;
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "Amount owed is $0.00\n" +
-      "You earned 0 credits\n");
-  });
+/**
+ * Now we are ready to refactor legacy code
+ */
+describe('statment', async function() {
 
-  it('for tragedy with less than 30 audience', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'hamlet',
-          audience: 20
-        },
-      ]
-    };
-    let plays = {
-      hamlet: { name: 'Hamlet', type: 'tragedy' }
-    };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "  Hamlet: $400.00 (20 seats)\n" +
-      "Amount owed is $400.00\n" +
-      "You earned 0 credits\n");
-  });
+    it('for empty invoice', async function() {
+        let invoice = {
+            performances: []
+        };
+        let plays;
+        const result = statement(invoice, plays);
+        assert.equal(result,"Statement for undefined\n" +
+            "Amount owed is $0.00\n" +
+            "You earned 0 credits\n");
+    });
 
-  it('for tragedy with more than 30 audience', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'hamlet',
-          audience: 31
-        },
-      ]
-    };
-    let plays = {
-      hamlet: { name: 'Hamlet', type: 'tragedy' }
-    };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "  Hamlet: $410.00 (31 seats)\n" +
-      "Amount owed is $410.00\n" +
-      "You earned 1 credits\n");
-  });
+    it('should throw error for non empty invoice but type is null', async function() {
+        let invoice = {
+            performances: [
+                {
+                    playID: 0,
+                }
+            ]
+        };
 
-  it('for comedy with 20 audience', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'asLike',
-          audience: 20
-        },
-      ]
-    };
-    let plays = {
-      asLike: { name: "As You Like It", type: "comedy" }
-    };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "  As You Like It: $360.00 (20 seats)\n" +
-      "Amount owed is $360.00\n" +
-      "You earned 4 credits\n");
-  });
+        let plays = {
+            0: {
+                "type": null
+            }
+        };
+        //const result = statement(invoice, plays);
+        assert.throws(
+            function(){
+                statement(invoice, plays)
+            },
+            Error, "Error: unknown type: null");
+    });
 
-  it('for comedy with more than 20 audience', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'asLike',
-          audience: 21
-        },
-      ]
-    };
-    let plays = {
-      asLike: { name: "As You Like It", type: "comedy" }
-    };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "  As You Like It: $468.00 (21 seats)\n" +
-      "Amount owed is $468.00\n" +
-      "You earned 4 credits\n");
-  });
+    it('tragedy play and audience is less than or equal to 30', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 30
+                }
+            ]
+        };
 
-  it('for unknown type', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'asLike',
-          audience: 21
-        },
-      ]
-    };
-    let plays = {
-      asLike: { name: "As You Like It", type: "unknown" }
-    };
-    assert.throws(() => {
-      statement(invoice, plays)
-    }, /unknown type: unknown/);
-  });
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "tragedy"
+            }
+        };
+        const result = statement(invoice, plays);
+        assert.equal(result, "Statement for Gildong\n" +
+            "  Hamlet: $400.00 (30 seats)\n" +
+            "Amount owed is $400.00\n" +
+            "You earned 0 credits\n");
+    });
 
-  it('for multiple performances', () => {
-    let invoice = {
-      customer: 'BigCo',
-      performances: [
-        {
-          playID: 'hamlet',
-          audience: 31
-        },
-        {
-          playID: 'asLike',
-          audience: 21
-        }
-      ]
-    };
-    let plays = {
-      hamlet: { name: 'Hamlet', type: 'tragedy' },
-      asLike: { name: "As You Like It", type: "comedy" }
-    };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "Statement for BigCo\n" +
-      "  Hamlet: $410.00 (31 seats)\n" +
-      "  As You Like It: $468.00 (21 seats)\n" +
-      "Amount owed is $878.00\n" +
-      "You earned 5 credits\n");
-  });
+    it('tragedy play and audience is more than 30', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 31
+                }
+            ]
+        };
+
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "tragedy"
+            }
+        };
+        const result = statement(invoice, plays);
+        assert.equal(result, "Statement for Gildong\n" +
+            "  Hamlet: $410.00 (31 seats)\n" +
+            "Amount owed is $410.00\n" +
+            "You earned 1 credits\n");
+    });
+
+    it('comedy play and audience is less or equal to 20', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 20
+                }
+            ]
+        };
+
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "comedy"
+            }
+        };
+        const result = statement(invoice, plays);
+        assert.equal(result, "Statement for Gildong\n" +
+            "  Hamlet: $360.00 (20 seats)\n" +
+            "Amount owed is $360.00\n" +
+            "You earned 4 credits\n");
+    });
+
+    it('comedy play and audience is less or equal to 20', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 21
+                }
+            ]
+        };
+
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "comedy"
+            }
+        };
+        const result = statement(invoice, plays);
+        assert.equal(result, "Statement for Gildong\n" +
+            "  Hamlet: $468.00 (21 seats)\n" +
+            "Amount owed is $468.00\n" +
+            "You earned 4 credits\n");
+    });
+
+    it('for several performances', async function() {
+        let invoice = {
+            customer: "Gildong",
+            performances: [
+                {
+                    playID: 0,
+                    audience: 30
+                },
+                {
+                    playID: 1,
+                    audience: 31
+                },
+                {
+                    playID: 2,
+                    audience: 30
+                },
+                {
+                    playID: 3,
+                    audience: 31
+                }
+            ]
+        };
+
+        let plays = {
+            0: {
+                "name": "Hamlet",
+                "type": "tragedy"
+            },
+            1: {
+                "name": "Othello",
+                "type": "tragedy"
+            },
+            2: {
+                "name": "as-like",
+                "type": "comedy"
+            },
+            3: {
+                "name": "as-like",
+                "type": "comedy"
+            }
+        };
+        const result = statement(invoice, plays);
+        assert.equal(result, "Statement for Gildong\n" +
+            "  Hamlet: $400.00 (30 seats)\n" +
+            "  Othello: $410.00 (31 seats)\n" +
+            "  as-like: $540.00 (30 seats)\n" +
+            "  as-like: $548.00 (31 seats)\n" +
+            "Amount owed is $1,898.00\n" +
+            "You earned 14 credits\n");
+    });
 });
