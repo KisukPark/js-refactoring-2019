@@ -317,11 +317,11 @@ function statement (invoice, plays) {
 ### amountFor 파라미터 play 참조 변경
 
 - amountFor 함수 내 play 변수를 playFor 함수로 변경한다.
-  - switch 문과 default 문의 play 오브젝트 참조를 playFor(aPerformance) 함수 호출로 변경해 준다. 
-  - Refactor Rename 메뉴를 이용하여 변경할 때 함수 파라미터까지 영향을 받아 정상 작동하지 않는다. 
+  - switch 문과 default 문의 play 객체 참조를 playFor(aPerformance) 함수 호출로 변경해 준다. 
+  - Refactor Rename 메뉴를 이용하여 리팩토링을 수행하면  함수 파라미터까지 영향을 받아 정상 작동하지 않는다. 
   - amountFor 함수 코드에서 play 참조를  수작업으로 playFor(aPerformance) 로 변경한다.
-  - ![image-20190324124801857](./imgs/playfor13.png)
-  - play 변수 변경 후 : ![image-20190324125330652](./imgs/playfor14.png)
+  - 리팩토링 전 : ![image-20190324124801857](./imgs/playfor13.png)
+  - 리팩토링 후  : ![image-20190324125330652](./imgs/playfor14.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -329,14 +329,18 @@ function statement (invoice, plays) {
 
 
 
-### amountFor play 파라미터 제거
-- amountFor 로 전달되는 play 파라미터가 함수 코드 내에서 사용되지 않는다. 이를 "Change Signature" 리팩토링을 이용하여 제거한다.
-- amountFor play 파라미터 제거
-  - amountFor play 를 선택한 후, Refactor "ChangeSignature" 메뉴를 선택한다.![image-20190324125810645](./imgs/amountfor01.png)
+### amountFor 파라미터 play 제거
+- 코드를 보면 amountFor 로 전달되는 파라미터 play가 amountFor 함수 코드 내에서 사용되지 않는다. 
 
-  - play Name 을 제거한 후, "Refactor" 버튼을 클리한다.![image-popup](./imgs/amountfor02.png)
+- 파라미터 play를 "Change Signature" 리팩토링을 이용하여 제거한다.
 
-  - play 파라미터 리팩토링 후  : 
+- amountFor 파라미터 play 제거
+  - amountFor 함수를 선택한 후, Refactor "ChangeSignature" 메뉴를 선택한다.
+    ![image-20190324125810645](./imgs/amountfor01.png)
+
+  - play 을 삭제한 후, "Refactor" 버튼을 클리한다.![image-popup](./imgs/amountfor02.png)
+
+  - 리팩토링 후 코드 예시 : 
 
     ```javascript
         function amountFor(aPerformance) {
@@ -371,16 +375,16 @@ function statement (invoice, plays) {
 
 
 
-## thisAmount 변수 참조 제거
+## thisAmount 변수 제거
 
 ### thisAmount 인라인 수행
 
-- thisAmount 변수를 선택하고, 리팩토링 "Inline" 메뉴를 실행한다. 
-  - ![image-20190324132900268](./imgs/inline01.png)
+- thisAmount 변수 참조를 인라인을 이용하여 함수 호출로 변경하고, 이를 삭제한다.
+  - thisAmount 변수를 선택하고, Refactor "Inline" 메뉴를 실행한다. ![image-20190324132900268](./imgs/inline01.png)
 
   - Inline 안내창 : ![image-20190324132945258](./imgs/inline02.png)
 
-  - 리택토링 수행 후 :  
+  - 리택토링 후 코드 예시 :  
 
     ```javascript
     function statement (invoice, plays) {
@@ -419,20 +423,18 @@ function statement (invoice, plays) {
 
 ## Volume Credits 계산 추출
 
-### 코드 분석
-
 ### volumeCreditsFor 함수 추출
 
 - 리팩토링 편의를 위해 임시 변수 추가
-  - 리팩토링 전 volumeCredits 코드 : ![image-20190324133209544](./imgs/volcredits01.png)
+  - 리팩토링 전 코드 : ![image-20190324133209544](./imgs/volcredits01.png)
   - 리팩토링 편의를 위해 아래와 같이 tmpCredits 을 추가한다.![image-20190324133406157](./imgs/volcredits02.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
-- 함수 추출
-  - ![image-20190324133646536](./imgs/volcredits03.png)
+- volumeCreditsFor 함수 추출
+  - Refactor "Extact Method" 메뉴를 선택한다. ![image-20190324133646536](./imgs/volcredits03.png)
   - 함수 생성 위치(Scope)는 "function statement"를 선택한다.
   - 생성된 함수는 아래로 이동하여 코드를 정리한다. 
-  - ![image-20190324134052618](./imgs/volcredits04.png)
+  - 리랙토링 후 : ![image-20190324134052618](./imgs/volcredits04.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
   - ![image-20190324134132984](./imgs/volcredits05.png)
@@ -442,10 +444,10 @@ function statement (invoice, plays) {
 ### volumeCreditsFor Signature 변경
 
 - volumeCreditsFor 에서 perf 변수가 선언되어 있지 않다. 함수 파라미터를 이용하여 이를 전달한다.
-  - ![image-20190324134316440](./imgs/volcredits06.png)
-  - ![image-20190324134554393](./imgs/volcredits07.png)
-  - ![image-20190324135904590](./imgs/volcredits08.png)
-  - ![image-20190324135945149](./imgs/volcredits09.png)
+  - perf 변수가 선언되지 않았음을 알 수 있다.![image-20190324134316440](./imgs/volcredits06.png)
+  - volumeCreditsFor 을 선택한 후, Refactor "Change Signature" 메뉴를 선택한다.![image-20190324134554393](./imgs/volcredits07.png)
+  - perf 파라미터를 추가한다.![image-20190324135904590](./imgs/volcredits08.png)
+  - 리팩토링 후 : ![image-20190324135945149](./imgs/volcredits09.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -454,7 +456,7 @@ function statement (invoice, plays) {
 ### volumeCreditsFor 지역변수 이름 변경
 
 - volumeCreditsFor 코드에서 tmpCredits 를 선택하고 Refactor "Rename" 메뉴을 이용하여 result 로 이름을 변경한다.
-  - ![image-20190324140114516](./imgs/volcredits10.png)
+  - 수정하고자 하는 변수를 선택한 후, Refactor "Rename" 메뉴를 선택한다.![image-20190324140114516](./imgs/volcredits10.png)
   - 리팩토링 이후 : ![image-20190324140157611](./imgs/volcredits11.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -464,20 +466,22 @@ function statement (invoice, plays) {
 ### volumeCreditsFor 파라미터 이름 변경
 
 - volumeCreditsFor 파라미터 perf 를 aPerformance 로 변경한다.
-  - ![image-20190324140452501](./imgs/volcredits12.png)
-  - ![image-20190324140550592](./imgs/volcredits13.png)
+  - 파라미터 perf 를 선택한 후, Refactor "Rename" 메뉴를 선택한다.![image-20190324140452501](./imgs/volcredits12.png)
+  - 리팩토링 후 : ![image-20190324140550592](./imgs/volcredits13.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
-### Inline tmpCredits
+### 임시 변수 제거
 
-- ![image-20190324143919152](./imgs/volcredits14.png)
-- ![image-20190324143956199](./imgs/volcredits15.png)
-- ![image-20190324144020657](./imgs/volcredits16.png)
+- 임시로 생성한  tmpCredits 를 인라인 리팩토링을 이용하여 코드에서 제거한다.
+  - tmpCredits 를 선택한 후, Refactor "Inline" 메뉴를 선택한다.![image-20190324143919152](./imgs/volcredits14.png)
+  - 내용을 확인하고 Refactor 버튼을 선택한다.![image-20190324143956199](./imgs/volcredits15.png)
+  - 리팩토링 후 : ![image-20190324144020657](./imgs/volcredits16.png)
 
-
+- 테스트 수행
+  - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
@@ -485,14 +489,17 @@ function statement (invoice, plays) {
 
 ### 코드 분석
 
-- format 변수 
-  - ![image-20190324144105051](./imgs/format01.png)
+- format 변수를 보면 US 달러로 숫자 포맷을 변환하기 위해 선언되어 있다.
+- 이를 함수로 치환해 두면 가독성 좋아지고 리팩토링 작업이 원활해진다.
+
+- format 변수 코드 : 
+    ![image-20190324144105051](./imgs/format01.png)
 
 ### format 함수 생성
 
-- 함수 생성
+- format 함수를 생성한다.
 
-  - 원본 코드 format 오브젝트의 코드를 이용하여 함수를 생성한다. 아래 코드와 같은 함수를 생성한다.
+  - 원본 코드 format 코드를 이용하여 아래 코드와 같은 함수를 생성한다.
 
   - ```javascript
     function format(aNumber) {
@@ -502,11 +509,11 @@ function statement (invoice, plays) {
     }
     ```
 
-  - 원본 코드 format 과 충돌이 난다.
+  - 원본 코드 format 과 충돌이 난다. 
+    ![image-20190324144155093](./imgs/format02.png)
 
-  -  ![image-20190324144155093](./imgs/format02.png)
-
-  - 원본 코드에서 충돌이 나는 부분을 삭제한다.![image-20190324144249275](./imgs/format03.png)
+  - 원본 코드에서 충돌이 나는 부분을 삭제한다.
+    ![image-20190324144249275](./imgs/format03.png)
 
 - 테스트 수행
 
@@ -514,23 +521,25 @@ function statement (invoice, plays) {
 
 
 
-### format 이름 변경 (usd)
+### usd 로 함수명 변경
 
 - format 함수 이름을 usd 로 변경한다.
-  - 함수가 출력하는 통화가 USD 임으로 이를 직관적으로 알 수 있도록 함수명을 usd 로 변경한다.
+  - 함수가 출력하는 통화가 USD 임으로, 이를 직관적으로 알 수 있도록 함수명을 usd 로 변경한다.
   - for 문 코드 내에서 format 변수를 선택한다.![image-20190324142130310](./imgs/format04.png)
-  - Refactor "Rename" 메뉴를 선택한다.
-  - ![image-20190324144340284](./imgs/format05.png)
+  - Refactor "Rename" 메뉴를 선택한다. ![image-20190324144340284](./imgs/format05.png)
   - usd 로 이름을 변경한다. ![image-20190324142341950](./imgs/format06.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
 
 
-### usd 통화 단위 중복 수정
+### usd 입력 통화 단위 수정
 
-- usd 함수 호출과 출력 부분을 분석해 보면 통화 단위가 달러임을 알 수 있다. 그러나 프로그램에서 관리하는 amount 단위는 cent 임을 알 수 있다. cent를 달러로 변환하는 코드가 2번 중복되어 있음을 확인할 수 있다.  따라서 usd 함수 입력 단위 자체를 cent라고 가정하고 코드를 수정하여 중복을 제거한다.
-- ![image-20190324143139140](./imgs/format07.png)
+- usd 함수 호출과 출력 부분을 분석해 보면 통화 단위가 달러임을 알 수 있다. 
+- 그러나 프로그램에서 관리하는 amount 단위는 cent 이다. 
+- cent를 달러로 변환하는 코드가 2번 중복되어 있음을 확인할 수 있다.  
+- usd 함수 입력 단위 자체를 cent라고 가정하고 코드를 수정하여 중복을 제거한다.
+- 리팩토링 후 : ![image-20190324143139140](./imgs/format07.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -541,9 +550,9 @@ function statement (invoice, plays) {
 ### Total Volume Credits 계산을 위한 for 문 분리
 
 - statement 함수 for 문 total volumeCredits 계산하는 부분을 아래와 같이 분리한다. 
-  - 리픽토링 후 : ![image-20190324144729303](./imgs/totvolcredits01.png)
+  - 리팩토링 후 : ![image-20190324144729303](./imgs/totvolcredits01.png)
 
-  - 코드 예시 : 
+  - 리팩토링 후 코드 예시 : 
 
     ```javascript
     function statement (invoice, plays) {
@@ -569,14 +578,14 @@ function statement (invoice, plays) {
 - 테스트 수행
 
   - 테스트를 수행하고 그 결과를 확인한다.
-- volumeCredits 초기화 문장을 for문 바로 위로 이동한다.
-  - 이를 리팩토링에서는 Slide Statements 라고 한다.
+- volumeCredits 초기화 문장 volumeCredits 을 for문 바로 위로 이동한다.
+  - 리팩토링에서는 이를 [Slide Statements](https://refactoring.com/catalog/slideStatements.html) 라고 한다.
 
   - 리팩토링 후 : 
 
     ![image-20190324145047082](./imgs/totvolcredits03.png)
 
-  - 코드 예시 : 
+  - 리팩토링 후 코드 예시 : 
 
     ```javascript
     function statement (invoice, plays) {
@@ -607,14 +616,14 @@ function statement (invoice, plays) {
 
 ### totalVolumeCredits 추출
 
-- totalVolumeCredits 추출
-  - 리팩토링 메뉴 : ![image-20190324145449076](./imgs/totvolcredits04.png)
+- totalVolumeCredits 를 계산하는 코드를 선택하고 이를 totalVolumeCredits 함수로 추출한다.
+  - totalVolumeCredits 를 계산하기 위한 코드를 선택한 후, Refactor "Extract Method" 메뉴를 선택한다.  ![image-20190324145449076](./imgs/totvolcredits04.png)
 
   - 함수 생성 위치(Scope)는 "function statement"를 선택한다. ![image-20190407181826485](./imgs/totvolcredits08.png)
 
   - 생성된 함수는 아래로 이동하여 코드를 정리한다. 
 
-  - 코드 예시 : 
+  - 리팩토링 후 코드 예시 : 
 
     ```javascript
     function statement (invoice, plays) {
@@ -650,13 +659,13 @@ function statement (invoice, plays) {
 
 ### volumeCredits 변수 인라인 수행
 
-- 임시 변수 volumeCredits 을 totalVolumeCredits 호출로 대치한다.
+- 임시 변수 volumeCredits 참조를 인라인 리팩토링을 이용하여 totalVolumeCredits 함수 호출로 대치한다.
 
-  - ![image-20190324145904639](./imgs/totvolcredits06.png)
+  - volumeCredits 변수를 선택한 후, Refactor "Inline" 메뉴를 선택한다.![image-20190324145904639](./imgs/totvolcredits06.png)
 
-  - ![image-20190324145948847](./imgs/totvolcredits07.png)
+  - 문구를 확인한 후, "Refactor" 버튼을 선택한다.![image-20190324145948847](./imgs/totvolcredits07.png)
 
-  - 래팩토링 후 : 
+  - 래팩토링 후 코드 예시 : 
 
     ```javascript
     function statement (invoice, plays) {
@@ -686,7 +695,7 @@ function statement (invoice, plays) {
 
 ### Total Amount 계산을 위한 for 문 분리
 
-- statement 문의 for 문을 totalAmount 를 계산하기 위하여 아래와 같이 분리한다. 분리
+- statement 문의 for 문을 totalAmount 를 계산하기 위하여 아래와 같이 분리한다. 
 
   - 리팩토링 후 : ![image-20190407182414632](./imgs/totamt04.png)
 
