@@ -18,12 +18,12 @@ function statement (invoice, plays) {
     result += `You earned ${volumeCredits} credits\n`;
     return result;
 
-    function volumeCreditsFor(perf) {
+    function volumeCreditsFor(aPerformance) {
         let result = 0;
         // add volume credits
-        result += Math.max(perf.audience - 30, 0);
+        result += Math.max(aPerformance.audience - 30, 0);
         // add extra credit for every ten comedy attendees
-        if ("comedy" === playFor(perf).type) result += Math.floor(perf.audience / 5);
+        if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5);
         return result;
     }
 
