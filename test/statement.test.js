@@ -111,4 +111,26 @@ describe('statement', () => {
       statement(invoice, plays)
     }, /unknown type: unknown/);
   });
+
+  it('for multiple performances', () => {
+    let invoice = {
+      customer: 'BigCo',
+      performances: [
+        {
+          playID: 'hamlet',
+          audience: 31
+        },
+        {
+          playID: 'asLike',
+          audience: 21
+        }
+      ]
+    };
+    let plays = {
+      hamlet: { name: 'Hamlet', type: 'tragedy' },
+      asLike: { name: "As You Like It", type: "comedy" }
+    };
+    const result = statement(invoice, plays);
+    assert.strictEqual(result, "");
+  });
 });
