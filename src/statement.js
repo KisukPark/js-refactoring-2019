@@ -8,9 +8,7 @@ function statement (invoice, plays) {
 
     for (let perf of invoice.performances) {
 
-        let v = volumeCreditsFor(perf);
-
-        volumeCredits += v;
+        volumeCredits += volumeCreditsFor(perf);
 
         // print line for this order
         result += `  ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
