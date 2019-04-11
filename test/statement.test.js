@@ -14,7 +14,7 @@ describe('statement', () => {
       "You earned 0 credits\n");
   });
 
-  it('to first switch', () => {
+  it('for one performance with less than 30 audience', () => {
     let invoice = {
       customer: 'BigCo',
       performances: [
