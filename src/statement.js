@@ -7,10 +7,14 @@ function statement (invoice, plays) {
             minimumFractionDigits: 2 }).format;
 
     for (let perf of invoice.performances) {
+
+        let v = 0;
         // add volume credits
-        volumeCredits += Math.max(perf.audience - 30, 0);
+        v += Math.max(perf.audience - 30, 0);
         // add extra credit for every ten comedy attendees
-        if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
+        if ("comedy" === playFor(perf).type) v += Math.floor(perf.audience / 5);
+
+        volumeCredits += v;
 
         // print line for this order
         result += `  ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
