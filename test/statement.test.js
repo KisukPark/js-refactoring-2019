@@ -131,6 +131,10 @@ describe('statement', () => {
       asLike: { name: "As You Like It", type: "comedy" }
     };
     const result = statement(invoice, plays);
-    assert.strictEqual(result, "");
+    assert.strictEqual(result, "Statement for BigCo\n" +
+      "  Hamlet: $410.00 (31 seats)\n" +
+      "  As You Like It: $468.00 (21 seats)\n" +
+      "Amount owed is $878.00\n" +
+      "You earned 5 credits\n");
   });
 });
