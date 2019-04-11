@@ -48,6 +48,9 @@ describe('statement', () => {
       hamlet: { name: 'Hamlet', type: 'tragedy' }
     };
     const result = statement(invoice, plays);
-    assert.strictEqual(result, "");
+    assert.strictEqual(result, "Statement for BigCo\n" +
+      "  Hamlet: $410.00 (31 seats)\n" +
+      "Amount owed is $410.00\n" +
+      "You earned 1 credits\n");
   });
 });
