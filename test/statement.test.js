@@ -73,4 +73,21 @@ describe('statement', () => {
       "Amount owed is $360.00\n" +
       "You earned 4 credits\n");
   });
+
+  it('for comedy with more than 20 audience', () => {
+    let invoice = {
+      customer: 'BigCo',
+      performances: [
+        {
+          playID: 'asLike',
+          audience: 21
+        },
+      ]
+    };
+    let plays = {
+      asLike: { name: "As You Like It", type: "comedy" }
+    };
+    const result = statement(invoice, plays);
+    assert.strictEqual(result, "");
+  });
 });
