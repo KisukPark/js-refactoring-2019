@@ -23,8 +23,8 @@ function statement (invoice, plays) {
     result += `You earned ${volumeCredits} credits\n`;
     return result;
 
-    function playFor(perf) {
-        return plays[perf.playID];
+    function playFor(aPerformance) {
+        return plays[aPerformance.playID];
     }
 
     function amountFor(aPerformance, play) {
