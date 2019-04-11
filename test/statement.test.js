@@ -9,6 +9,8 @@ describe('statement', () => {
     };
     let plays;
     const result = statement(invoice, plays);
-    assert.strictEqual(result, "");
+    assert.strictEqual(result, "Statement for BigCo\n" +
+      "Amount owed is $0.00\n" +
+      "You earned 0 credits\n");
   });
 });
