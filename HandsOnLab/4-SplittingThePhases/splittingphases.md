@@ -1,12 +1,18 @@
 # 4. 계산 부분과 출력 부분을 분리하자.
 
-
+## 새로운 요구사항
+- html 출력 기능 추가
+	- htmlStatement(...) 필요.
 
 ## 코드를 살펴 보자
 
 - 함수들이 복잡하게 연결되어 있어 이해하기 쉽지 않다.
-- 구조를 개선하여 더 사람이 읽기 편한 코드로 바꿀순 없을까 ?
-- 개선한다면 어떻게 구조를 변경할 것인가?
+	- calculation과 rendering 이 혼재되어 있다.
+
+- 분리하면
+	- calculation: 공통으로 사용
+	- rendering: plainText / html 별도로 분기
+
 - 관련 리팩토링 기법 :
   - Split Phase by Extract Function
 
@@ -724,3 +730,16 @@
 - 테스트 수행
 
   - 테스트가 전부 통과되었는지 확인한다. 
+
+## 정리하며...
+
+- 단계 나누기 + intermediate data 활용
+
+- Move Method 절차 - baby step
+	- assign to intermediate data
+	- copy method
+	- replace method to intermediate data
+	- inline method
+
+- loop 장벽 띄어 넘기
+	- Object.assign({}, originalData)	
