@@ -107,7 +107,8 @@ describe('statement', () => {
     let plays = {
       asLike: { name: "As You Like It", type: "unknown" }
     };
-    const result = statement(invoice, plays);
-    assert.strictEqual(result, "");
+    assert.throws(() => {
+      statement(invoice, plays)
+    }, /unknown type: unknown/);
   });
 });
