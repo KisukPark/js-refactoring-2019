@@ -73,36 +73,59 @@ function statement (invoice, plays) {
 
 ### amountFor 함수 추출
 
-- 임시로 switch 문 default 문  코멘트 처리하기
+- amountFor 함수 추출
 
-  - 아래와 같이 amountFor 코드 영역을 선택하고 바로 "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragment has multiple exit points" 문구가 출력되는 경우가 있다.
+  - 아래와 같이 amountFor 코드 영역을 선택하고,  "Extract Method" 리팩토링을 수행하면 아래와 같이 "Selected fragment has multiple exit points" 문구가 출력되는 경우가 있다.
   - 리팩토링 문구 예시 :  ![image](./imgs/amtfor01.png)
-  - 아래와 같이 임시로 default 문을 코멘트 처리한다. ![image-20190404151142212](./imgs/amtfor02.png)
 
-- 리팩토링을 이용하여 추출할 코드 영역을 선택한다.
+- 수작업 amountFor 함수 생성
 
-  - ![image-20190404151320650](./imgs/img1.png)
+  - 아래 코드를 이용하여 수작업으로 amountFor 함수를 생성하고 이를 추가한다.
 
-- 해당 영역에서 오른쪽 마우스 버튼을 선택하고, "Extract Method" 를 이용하여 함수를 생성한다.
+    ```
+        function amountFor(perf, play) {
+            let thisAmount = 0;
+    
+            switch (play.type) {
+                case "tragedy":
+                    thisAmount = 40000;
+                    if (perf.audience > 30) {
+                        thisAmount += 1000 * (perf.audience - 30);
+                    }
+                    break;
+                case "comedy":
+                    thisAmount = 30000;
+                    if (perf.audience > 20) {
+                        thisAmount += 10000 + 500 * (perf.audience - 20);
+                    }
+                    thisAmount += 300 * perf.audience;
+                    break;
+                default:
+                    throw new Error(`unknown type: ${play.type}`);
+            }
+    
+            return thisAmount;
+        }
+    ```
 
-  - ![img](./imgs/img2.png)
+    
 
-- 함수 생성 Scope는 "function statement"를 선택한다.
+- 리팩토링할 코드 영역을 지우고 amountFor 함수 호출로 변경한다. ![image-20190411204233061](./imgs/amtfor02.png)
 
-  - ![image-20190404151418192](./imgs/img3.png)
-
-- Extract Function 수행 후, amountFor 함수 위치를 statement 함수 하단으로 이동해 준다. 
-
-- 코멘트 처리한 default 문도 코멘트를 지운다.
-
-  - 코드 수정 후 : 
-    ![image-20190404151832023](./imgs/amtfor03.png)
 
 - 리팩토링 후 코드 예시 : 
+
   ```javascript
+  function statement (invoice, plays) {
+      let totalAmount = 0;
+      let volumeCredits = 0;
+      let result = `Statement for ${invoice.customer}\n`;
+      const format = new Intl.NumberFormat("en-US",
+          { style: "currency", currency: "USD",
+              minimumFractionDigits: 2 }).format;
       for (let perf of invoice.performances) {
           const play = plays[perf.playID];
-          let thisAmount = amountFor(play, perf);
+          let thisAmount = amountFor(perf, play);
   
           // add volume credits
           volumeCredits += Math.max(perf.audience - 30, 0);
@@ -117,7 +140,7 @@ function statement (invoice, plays) {
       result += `You earned ${volumeCredits} credits\n`;
       return result;
   
-      function amountFor(play, perf) {
+      function amountFor(perf, play) {
           let thisAmount = 0;
   
           switch (play.type) {
@@ -137,27 +160,14 @@ function statement (invoice, plays) {
               default:
                   throw new Error(`unknown type: ${play.type}`);
           }
+  
           return thisAmount;
       }
+  }
   ```
 
 - 테스트 수행
 
-  - 테스트가 전부 통과되었는지 확인한다.
-
-
-
-
-
-
-### amountFor Signature 변경
-
-- Refactor 메뉴의 "Change Signature" 기능을 이용하여 amountFor 의 Signature 를 변경한다.
-  -  마우스를 이용하여 코드 상에서 amountFor 를 선택한 후 아래 그림과 같이 "Change Signature" 리팩토링을 수행한다.
-  -  ![image-20190404152129733](./imgs/img5.png)
-  -  perf 를 함수 첫번째 파라미터로 설정한다. "value in the call" 은 함수를 호출하는 코드에서 입력할 변수나 값을 지정한다. 여기서는 perf 로 동일하다. "+" 버튼 옆 "Up" 버튼을 이용하여 perf 를 첫번째 파라미터로 이동한다. ![image-20190404152234903](./imgs/img6.png)
-  -  리팩토링 수행 후 :  ![image-20190324101802842](./imgs/img7.png)
-- 테스트 수행
   - 테스트가 전부 통과되었는지 확인한다.
 
 
@@ -770,7 +780,7 @@ function statement (invoice, plays) {
 
   - 함수 생성 위치(Scope)는 "function statement"를 선택한다. ![image-20190407182922044](./imgs/totamt06.png)
 
-  - 생성된 함수는 아래로 이동하여 코드를 정리한다.  ![image-20190407183109137](/Users/leo/refactoring/study/js-refactoring-2019/HandsOnLab/3-Decomposing/imgs/totamt07.png)
+  - 생성된 함수는 아래로 이동하여 코드를 정리한다.  ![image-20190407183109137](./imgs/totamt07.png)
 
   - 코드 예시  :
 
