@@ -14,7 +14,7 @@ describe('statement', () => {
       "You earned 0 credits\n");
   });
 
-  it('for one performance with less than 30 audience', () => {
+  it('for tragedy with less than 30 audience', () => {
     let invoice = {
       customer: 'BigCo',
       performances: [
@@ -34,7 +34,7 @@ describe('statement', () => {
       "You earned 0 credits\n");
   });
 
-  it('for one performance with more than 30 audience', () => {
+  it('for tragedy with more than 30 audience', () => {
     let invoice = {
       customer: 'BigCo',
       performances: [
@@ -52,5 +52,22 @@ describe('statement', () => {
       "  Hamlet: $410.00 (31 seats)\n" +
       "Amount owed is $410.00\n" +
       "You earned 1 credits\n");
+  });
+
+  it('for comedy with 20 audience', () => {
+    let invoice = {
+      customer: 'BigCo',
+      performances: [
+        {
+          playID: 'asLike',
+          audience: 20
+        },
+      ]
+    };
+    let plays = {
+      asLike: { name: "As You Like It", type: "comedy" }
+    };
+    const result = statement(invoice, plays);
+    assert.strictEqual(result, "");
   });
 });
