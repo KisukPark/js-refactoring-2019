@@ -5,6 +5,9 @@ function statement (invoice, plays) {
     for (let perf of invoice.performances) {
         // print line for this order
         result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+    }
+
+    for (let perf of invoice.performances) {
         totalAmount += amountFor(perf);
     }
 
