@@ -2,7 +2,7 @@ const assert = require('assert');
 const statement = require('../src/statement');
 
 describe('statement', () => {
-  it('x', () => {
+  it('for empty performances', () => {
     let invoice = {
       customer: 'BigCo',
       performances: []
