@@ -5,8 +5,9 @@ function statement (invoice, plays) {
     const format = new Intl.NumberFormat("en-US",
         { style: "currency", currency: "USD",
             minimumFractionDigits: 2 }).format;
+
     for (let perf of invoice.performances) {
-        const play = plays[perf.playID];
+        const play = playFor(perf);
         let thisAmount = amountFor(perf, play);
 
         // add volume credits
@@ -21,6 +22,10 @@ function statement (invoice, plays) {
     result += `Amount owed is ${format(totalAmount/100)}\n`;
     result += `You earned ${volumeCredits} credits\n`;
     return result;
+
+    function playFor(perf) {
+        return plays[perf.playID];
+    }
 
     function amountFor(aPerformance, play) {
         let result = 0;
