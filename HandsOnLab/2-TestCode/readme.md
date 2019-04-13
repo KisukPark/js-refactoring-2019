@@ -1,4 +1,4 @@
-# Part2. Characterization Test 작성 
+# Part2. Characterization Test 작성 🚧 
 
 지금부터 우리는 `statement` 코드에 요구사항을 반영하기 전 리팩토링 하려 합니다.  
 하지만 해당 코드의 동작을 정확히 알지 못하는 상황이기에 바로 리팩토링 할 수가 없습니다.  
@@ -13,6 +13,7 @@ __Characterization Test 는__ 일반적인 테스트와 다르게 동작의 옳�
 
 ## statement.js 도메인 설명
 
+시작하기 전 모두 `tagPart2` tag 를 checkout 해주세요!  
 우리가 리팩토링 할 `statement` 는 `invoice` 와 `plays` 정보를 이용하여 Bill 정보를 출력하는 함수입니다. 아래 내용은 해당 입력과 출력에 대한 샘플 데이터입니다.
 
 plays:
@@ -46,10 +47,13 @@ invoice:
 package.json
 ```json
 "devDependencies": {
-  "mocha": "^6.1.2",  // Javascript Test Framework 패키지
-  "nyc": "^13.3.0"    // coverage 툴인 istanbul 의 CLI 패키지
+  "mocha": "^6.1.2",
+  "nyc": "^13.3.0"
 }
 ```
+* mocha: Javascript Test Framework 패키지
+* coverage: 툴인 Istanbul 의 CLI 패키지
+
 ```console
 npm install
 ```
@@ -128,8 +132,8 @@ it('x', () => {
 ```
 다시 테스트를 실행해보면 당연히 테스트를 통과합니다.  
 __이로써 우리는 `invoice.performances` 가 empty 인 경우에 대해 코드의 동작을 확인(Characterize) 했습니다.__  
-그러니 `'x'` 였던 테스트 코드 이름도 적절한 이름으로 변경해 줍니다. 저는 `'for empty performances'` 라 하였습니다.
-
+그러니 `'x'` 였던 테스트 코드 이름도 적절한 이름으로 변경해 줍니다. 저는 `'for empty performances'` 라 하였습니다.  
+__테스트의 네이밍은 코드의 동작을 이해하게 되었을 때 다시 바꾸셔도 됩니다.__  
 
 이 과정이 이상해 보일 수 있습니다. 하지만 우리의 목적은 코드의 동작을 검증하는 게 아니라 리팩토링에 앞서 Characterization Test로 모르는 코드를 이해하는 것입니다.
 
@@ -298,7 +302,9 @@ Coverage:
 
 ## Step6. Cover additional case
 
-마지막으로 테스트하지 않은 경우가 하나 남았습니다. `invoice.performances` 가 여러 개일 경우입니다. 테스트를 작성해 봅시다.
+마지막으로 테스트하지 않은 경우가 하나 남았습니다.  
+바로 Loop 에 대한 테스트 입니다. 왜 Loop 테스트가 중요할까요?😮  
+`invoice.performances` 가 여러 개인 경우에 대해 테스트를 작성해 봅시다.  
 
 Test Code:
 ```js
@@ -329,4 +335,4 @@ it('for multiple performances', () => {
 });
 ```
 
-지금까지 `statement` 코드를 리팩토링 하기에 앞서 Characterization Test를 작성하며 코드의 동작을 이해했습니다. 또한 이제는 리팩토링을 진행하면서 중간에 버그가 발생하지 않는지를 쉽게 확인할 수 있게 되었습니다.
+지금까지 `statement` 코드를 리팩토링 하기에 앞서 Characterization Test 총 6개를 작성하며 코드의 동작을 이해했습니다. 또한 이제는 리팩토링을 진행하면서 중간에 버그가 발생하지 않는지를 쉽게 확인할 수 있게 되었습니다.
