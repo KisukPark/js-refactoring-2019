@@ -110,7 +110,7 @@ class PerformanceCalculator {
 
         return result;
     }
-}s
+}
 ----
 
 image:./images/6.png[]
