@@ -84,7 +84,6 @@ class PerformanceCalculator {
 
     get amount() {
         let result = 0;
-        let play = this.performance.play;
 
         switch (this.play.type) {
             case "tragedy":
