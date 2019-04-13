@@ -1,9 +1,11 @@
 # 4. 계산 부분과 출력 부분을 분리하자.
 
 ## part4 준비
-- $ git add .
-- $ git commit -m "end of part3"
-- $ git checkout -B part4 tagPart4 -f
+```
+$ git add .
+$ git commit -m "end of part3"
+$ git checkout -B part4 tagPart4 -f
+```
 
 ## 새로운 요구사항
 - html 출력 기능 추가
