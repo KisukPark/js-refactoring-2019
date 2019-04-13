@@ -52,7 +52,7 @@ package.json
 }
 ```
 * mocha: Javascript Test Framework 패키지
-* coverage: 툴인 Istanbul 의 CLI 패키지
+* nyc: coverage 툴인 Istanbul 의 CLI 패키지
 
 ```console
 npm install
