@@ -1,7 +1,8 @@
 # DECOMPOSING THE `STATEMENT` FUNCTION
 
-
 ## 작업 준비
+
+아래와 같이 git 명령어를 이용하여 리팩토링 작업을 수행할 코드로 이동한다.
 
 ```
 git checkout -B part3 tagPart3 --force
@@ -65,7 +66,7 @@ function statement (invoice, plays) {
 
 
 
-## amountFor 리팩토링
+## 1. amountFor 리팩토링
 
 ### 코드 분석
 
@@ -237,9 +238,49 @@ function statement (invoice, plays) {
 
 
 
+### thisAmount 인라인 수행
+
+- thisAmount 변수 참조를 인라인을 이용하여 함수 호출로 변경하고, 이를 삭제한다.
+
+  - thisAmount 변수를 선택하고, Refactor "Inline" 메뉴를 실행한다. ![image-20190324132900268](/Users/leo/refactoring/study-2019-1st/js.2019/HandsOnLab/3-Decomposing/imgs/inline01.png)
+
+  - Inline 안내창 : ![image-20190324132945258](/Users/leo/refactoring/study-2019-1st/js.2019/HandsOnLab/3-Decomposing/imgs/inline02.png)
+
+  - 리택토링 후 코드 예시 :  
+
+    ```javascript
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let volumeCredits = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+        const format = new Intl.NumberFormat("en-US",
+            { style: "currency", currency: "USD",
+                minimumFractionDigits: 2 }).format;
+        for (let perf of invoice.performances) {
+            const play = plays[perf.playID];
+            // add volume credits
+            volumeCredits += Math.max(perf.audience - 30, 0);
+            // add extra credit for every ten comedy attendees
+            if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    
+            // print line for this order
+            result += `  ${play.name}: ${format(amountFor(perf, play)/100)} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf, play);
+        }
+        result += `Amount owed is ${format(totalAmount/100)}\n`;
+        result += `You earned ${volumeCredits} credits\n`;
+        return result;
+    ```
+
+    
+
+- 테스트 수행
+
+  - 테스트를 수행하고 그 결과를 확인한다.
 
 
-## playFor 리팩토링
+
+## 2. play 변수 제거
 
 ### 코드 분석
 
@@ -257,11 +298,14 @@ function statement (invoice, plays) {
 ### playFor 함수 추출
 
 - playFor 함수 추출
-  - for 문 내에서 play 정보를 검색하는 아래 코드를 선택한다.![image-20190404154117471](./imgs/playfor01.png)
-  - Refactor "Extract Method" 를 이용하여 playFor 함수를 추출한다. ![image-20190404154214141](./imgs/playfor02.png)
-  - 함수 생성 Scope는 "function statement"를 선택한다. ![image-20190404154332604](./imgs/playfor15.png)
-  - 생성된 함수는 amountFor 함수 위치 바로 위로 이동하여 코드를 정리한다. 
-  - 리팩토링 수행 후 :  ![image-20190404154602561](./imgs/playfor03.png)
+  - for 문 내에서 play 정보를 검색하는 아래 코드를 선택한다.  ![image-20190404154117471](./imgs/playfor01.png)
+  - Refactor "Extract Method" 를 이용하여 playFor 함수를 추출한다.   ![image-20190404154214141](./imgs/playfor02.png)
+  - 함수 생성 Scope는 "function statement"를 선택한다.   ![image-20190404154332604](./imgs/playfor15.png)
+  - 리팩토링 후 :  ![image-20190414184641262](./imgs/playfor16.png)
+- 테스트 수행
+  - 테스트를 수행하고 그 결과를 확인한다.
+- 생성된 함수는 amountFor 함수 위치 바로 위로 이동하여 코드를 정리한다. 
+  - 리팩토링 후 : ![image-20190414185228706](./imgs/playfor17.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -291,32 +335,34 @@ function statement (invoice, plays) {
 ### play 변수 인라인 수행
 
 - for 문 내에 존재하는 play 변수를 리팩토링 "Inline Variable" 를 이용하여 제거한다.
-  - play 변수를 선택하고 Refactor "Inline Variable" 메뉴를 선택한다.![image-20190324124052128](./imgs/playfor10.png)
+  - play 변수를 선택하고 Refactor "Inline Variable" 메뉴를 선택한다.  ![image-20190324124052128](./imgs/playfor10.png)
 
   - Inline 옵션을 선택하고 "Refactor" 를 선택한다. ![image-20190404160436675](./imgs/playfor11.png)
 
   - 리팩토링 후 코드 예시 : 
 
     ```javascript
-        for (let perf of invoice.performances) {
-            let thisAmount = amountFor(perf, playFor(perf));
+    function statement (invoice, plays) {
+        let totalAmount = 0;
+        let volumeCredits = 0;
+        let result = `Statement for ${invoice.customer}\n`;
+        const format = new Intl.NumberFormat("en-US",
+            { style: "currency", currency: "USD",
+                minimumFractionDigits: 2 }).format;
     
+        for (let perf of invoice.performances) {
             // add volume credits
             volumeCredits += Math.max(perf.audience - 30, 0);
             // add extra credit for every ten comedy attendees
             if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
     
             // print line for this order
-            result += `  ${playFor(perf).name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
-            totalAmount += thisAmount;
+            result += `  ${playFor(perf).name}: ${format(amountFor(perf, playFor(perf))/100)} (${perf.audience} seats)\n`;
+            totalAmount += amountFor(perf, playFor(perf));
         }
         result += `Amount owed is ${format(totalAmount/100)}\n`;
         result += `You earned ${volumeCredits} credits\n`;
         return result;
-    
-        function playFor(aPerformance) {
-            return plays[aPerformance.playID];
-        }
     ```
 
 - 테스트 수행
@@ -327,9 +373,7 @@ function statement (invoice, plays) {
 
 
 
-## amountFor play 변수 제거
-
-### amountFor 파라미터 play 참조 변경
+### amountFor play 참조 변경
 
 - amountFor 함수 내 play 변수를 playFor 함수로 변경한다.
   - switch 문과 default 문의 play 객체 참조를 playFor(aPerformance) 함수 호출로 변경해 준다. 
@@ -390,79 +434,24 @@ function statement (invoice, plays) {
 
 
 
-## thisAmount 변수 제거
-
-### thisAmount 인라인 수행
-
-- thisAmount 변수 참조를 인라인을 이용하여 함수 호출로 변경하고, 이를 삭제한다.
-  - thisAmount 변수를 선택하고, Refactor "Inline" 메뉴를 실행한다. ![image-20190324132900268](./imgs/inline01.png)
-
-  - Inline 안내창 : ![image-20190324132945258](./imgs/inline02.png)
-
-  - 리택토링 후 코드 예시 :  
-
-    ```javascript
-    function statement (invoice, plays) {
-        let totalAmount = 0;
-        let volumeCredits = 0;
-        let result = `Statement for ${invoice.customer}\n`;
-        const format = new Intl.NumberFormat("en-US",
-            { style: "currency", currency: "USD",
-                minimumFractionDigits: 2 }).format;
-    
-        for (let perf of invoice.performances) {
-            // add volume credits
-            volumeCredits += Math.max(perf.audience - 30, 0);
-            // add extra credit for every ten comedy attendees
-            if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
-    
-            // print line for this order
-            result += `  ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience} seats)\n`;
-            totalAmount += amountFor(perf);
-        }
-        result += `Amount owed is ${format(totalAmount/100)}\n`;
-        result += `You earned ${volumeCredits} credits\n`;
-        return result;
-    
-    ```
-
-    
-
-- 테스트 수행
-
-  - 테스트를 수행하고 그 결과를 확인한다.
 
 
-
-
-
-## Volume Credits 계산 추출
+## 3. Volume Credits 계산 추출
 
 ### volumeCreditsFor 함수 추출
 
 - 리팩토링 편의를 위해 임시 변수 추가
   - 리팩토링 전 코드 : ![image-20190324133209544](./imgs/volcredits01.png)
-  - 리팩토링 편의를 위해 아래와 같이 tmpCredits 을 추가한다.![image-20190324133406157](./imgs/volcredits02.png)
+  - 리팩토링 편의를 위해 아래와 같이 임시변수 vvv 를 추가한다.  ![image-20190324133406157](./imgs/volcredits02.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 - volumeCreditsFor 함수 추출
-  - Refactor "Extact Method" 메뉴를 선택한다. ![image-20190324133646536](./imgs/volcredits03.png)
+  - Refactor "Extact Method" 메뉴를 선택한다.   ![image-20190324133646536](./imgs/volcredits03.png)
   - 함수 생성 위치(Scope)는 "function statement"를 선택한다.
-  - 생성된 함수는 아래로 이동하여 코드를 정리한다. 
-  - 리랙토링 후 : ![image-20190324134052618](./imgs/volcredits04.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
-  - ![image-20190324134132984](./imgs/volcredits05.png)
-
-
-
-### volumeCreditsFor Signature 변경
-
-- volumeCreditsFor 에서 perf 변수가 선언되어 있지 않다. 함수 파라미터를 이용하여 이를 전달한다.
-  - perf 변수가 선언되지 않았음을 알 수 있다.![image-20190324134316440](./imgs/volcredits06.png)
-  - volumeCreditsFor 을 선택한 후, Refactor "Change Signature" 메뉴를 선택한다.![image-20190324134554393](./imgs/volcredits07.png)
-  - perf 파라미터를 추가한다.![image-20190324135904590](./imgs/volcredits08.png)
-  - 리팩토링 후 : ![image-20190324135945149](./imgs/volcredits09.png)
+- 생성된 함수는 아래로 이동하여 코드를 정리한다. 
+  - 리랙토링 후 :   ![image-20190324134052618](./imgs/volcredits04.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
 
@@ -470,8 +459,8 @@ function statement (invoice, plays) {
 
 ### volumeCreditsFor 지역변수 이름 변경
 
-- volumeCreditsFor 코드에서 tmpCredits 를 선택하고 Refactor "Rename" 메뉴을 이용하여 result 로 이름을 변경한다.
-  - 수정하고자 하는 변수를 선택한 후, Refactor "Rename" 메뉴를 선택한다.![image-20190324140114516](./imgs/volcredits10.png)
+- volumeCreditsFor 함수 내에서 지역변수 vvv 를 선택하고 Refactor "Rename" 메뉴을 이용하여 result 로 이름을 변경한다.
+  - 수정하고자 하는 변수를 선택한 후, Refactor "Rename" 메뉴를 선택한다.  ![image-20190324140114516](./imgs/volcredits10.png)
   - 리팩토링 이후 : ![image-20190324140157611](./imgs/volcredits11.png)
 - 테스트 수행
   - 테스트를 수행하고 그 결과를 확인한다.
@@ -491,7 +480,7 @@ function statement (invoice, plays) {
 ### 임시 변수 제거
 
 - 임시로 생성한  tmpCredits 를 인라인 리팩토링을 이용하여 코드에서 제거한다.
-  - tmpCredits 를 선택한 후, Refactor "Inline" 메뉴를 선택한다.![image-20190324143919152](./imgs/volcredits14.png)
+  - tmpCredits 를 선택한 후, Refactor "Inline" 메뉴를 선택한다.   ![image-20190324143919152](./imgs/volcredits14.png)
   - 내용을 확인하고 Refactor 버튼을 선택한다.![image-20190324143956199](./imgs/volcredits15.png)
   - 리팩토링 후 : ![image-20190324144020657](./imgs/volcredits16.png)
 
@@ -500,7 +489,7 @@ function statement (invoice, plays) {
 
 
 
-## usd 포맷 함수 리팩토링
+## 4. US 통화 포맷 함수 리팩토링
 
 ### 코드 분석
 
@@ -560,7 +549,7 @@ function statement (invoice, plays) {
 
 
 
-## Total Volume Credits 리팩토링
+## 5. Total Volume Credits 리팩토링
 
 ### Total Volume Credits 계산을 위한 for 문 분리
 
@@ -704,7 +693,7 @@ function statement (invoice, plays) {
 
 
 
-## Total Amount 리팩토링
+## 6. Total Amount 리팩토링
 
 
 
