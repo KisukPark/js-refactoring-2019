@@ -1,6 +1,11 @@
 # DECOMPOSING THE `STATEMENT` FUNCTION
 
 
+## 작업 준비
+
+```
+git checkout -B part3 tagPart3 --force
+```
 
 
 
