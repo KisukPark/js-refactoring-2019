@@ -291,8 +291,10 @@ it('for unknown type', () => {
   let plays = {
     asLike: { name: "As You Like It", type: "unknown" }
   };
-  const result = statement(invoice, plays);
-  assert.strictEqual(result, /unknown type: unknown/);
+  assert.throws(() => {
+          const result = statement(invoice, plays);
+          }, /^Error: unknown type: unknown$/
+      );
 });
 ```
 
